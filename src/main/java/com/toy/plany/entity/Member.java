@@ -1,18 +1,13 @@
 package com.toy.plany.entity;
 
-import com.toy.plany.entity.enums.UserPosition;
+import com.toy.plany.entity.enums.Color;
+import com.toy.plany.entity.enums.MemberPosition;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -45,13 +40,13 @@ public class Member extends BaseTimeEntity {
     @JoinColumn(name = "DEPARTMENT_ID")
     private Department department;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "COLOR_ID")
+    @Column(length = 10, nullable = false)
+    @Enumerated(EnumType.STRING)
     private Color color;
 
     @Column(length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserPosition position;
+    private MemberPosition position;
 
     @Builder
     public Member(String employeeNum, String password, String slackUid, String name, String email, Department department, Color color) {

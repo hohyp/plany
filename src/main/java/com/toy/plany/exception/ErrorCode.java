@@ -15,14 +15,20 @@ public enum ErrorCode {
     INVALID_TYPE_VALUE("C005", "Invalid Type Value"),
     HANDLE_ACCESS_DENIED("C006", "Access Denied"),
 
-    //Meeting
-    MEETING_NOT_FOUND("M1001", "Meeting Not Found"),
+    //Event
+    EVENT_NOT_FOUND("E001", "Event Not Found"),
 
     //Schedule
     SCHEDULE_NOT_FOUND("S1001", "Schedule Not Found"),
 
-    //User
-    USER_NOT_FOUND("U1001", "User Not Found");
+    //Member
+    MEMBER_NOT_FOUND("M001", "Member Not Found"),
+
+    //Color
+    INSUFFICIENT_COLOR_ERROR("C001", "Insufficient Color Error"),
+
+    //Department
+    DEPARTMENT_NOT_FOUND("D001", "Department Not Found");
 
     private final String code;
     private final String message;

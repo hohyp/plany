@@ -1,5 +1,5 @@
 package com.toy.plany.entity.enums;
 
-public enum UserPosition {
+public enum MemberPosition {
     BACK, FRONT, UX
 }

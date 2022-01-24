@@ -1,6 +1,9 @@
 package com.toy.plany.service;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
+import com.toy.plany.dto.request.member.MemberCreateRequest;
+import com.toy.plany.dto.response.member.MemberResponse;
 
-public interface UserService extends UserDetailsService {
+public interface MemberService {
+    MemberResponse createUser(MemberCreateRequest request);
+
 }
