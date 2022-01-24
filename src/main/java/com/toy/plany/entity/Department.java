@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Access(AccessType.FIELD)
 public class Department {
     @Id
@@ -17,4 +16,9 @@ public class Department {
 
     @Column(nullable = false)
     private String name;
+
+    @Builder
+    public Department(String name) {
+        this.name = name;
+    }
 }

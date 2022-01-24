@@ -3,6 +3,7 @@ package com.toy.plany.entity;
 import com.toy.plany.entity.enums.RemindStatus;
 import com.toy.plany.entity.enums.RemindType;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,4 +26,10 @@ public class Reminder {
     @Column(length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
     private RemindStatus status;
+
+    @Builder
+    public Reminder(LocalDateTime remindAt, RemindStatus status) {
+        this.remindAt = remindAt;
+        this.status = status;
+    }
 }

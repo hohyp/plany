@@ -2,6 +2,7 @@ package com.toy.plany.entity;
 
 import com.toy.plany.entity.enums.ColorStatus;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,4 +25,9 @@ public class Color {
     @Enumerated(EnumType.STRING)
     private ColorStatus status;
 
+    @Builder
+    public Color(String code, ColorStatus status) {
+        this.code = code;
+        this.status = status;
+    }
 }

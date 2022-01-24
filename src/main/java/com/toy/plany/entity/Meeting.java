@@ -1,6 +1,7 @@
 package com.toy.plany.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,5 +29,16 @@ public class Meeting extends BaseTimeEntity{
     @Column(nullable = false)
     private LocalDateTime finishAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "REMINDER_ID")
     private Reminder reminder;
+
+    @Builder
+    public Meeting(String title, String description, LocalDateTime startAt, LocalDateTime finishAt, Reminder reminder) {
+        this.title = title;
+        this.description = description;
+        this.startAt = startAt;
+        this.finishAt = finishAt;
+        this.reminder = reminder;
+    }
 }
