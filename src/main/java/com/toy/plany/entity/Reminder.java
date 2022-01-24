@@ -1,7 +1,6 @@
 package com.toy.plany.entity;
 
 import com.toy.plany.entity.enums.RemindStatus;
-import com.toy.plany.entity.enums.RemindType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,11 +13,19 @@ import java.time.LocalDateTime;
 @Getter
 @Access(AccessType.FIELD)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reminder {
+public class Reminder extends BaseTimeEntity{
     @Id
     @Column(name = "REMINDER_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EVENT_ID")
+    private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private User user;
 
     @Column(nullable = false)
     private LocalDateTime remindAt;
@@ -28,7 +35,9 @@ public class Reminder {
     private RemindStatus status;
 
     @Builder
-    public Reminder(LocalDateTime remindAt, RemindStatus status) {
+    public Reminder(Event event, User user, LocalDateTime remindAt, RemindStatus status) {
+        this.event = event;
+        this.user = user;
         this.remindAt = remindAt;
         this.status = status;
     }

@@ -11,24 +11,19 @@ import javax.persistence.*;
 @Getter
 @Access(AccessType.FIELD)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MeetingUser {
+@DiscriminatorValue("MEETING")
+public class Attendants extends Event{
     @Id
-    @Column(name = "MEETING_USER_ID")
+    @Column(name = "ATTENDANTS_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEETING_ID")
-    private Meeting meeting;
+    @JoinColumn(name = "ATTENDANT_ID")
+    private User attendant;
 
     @Builder
-    public MeetingUser(User user, Meeting meeting) {
-        this.user = user;
-        this.meeting = meeting;
+    public Attendants(User attendant) {
+        this.attendant = attendant;
     }
 }

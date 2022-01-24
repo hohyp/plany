@@ -1,7 +1,6 @@
 package com.toy.plany.entity;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,11 +9,13 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Access(AccessType.FIELD)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Meeting extends BaseTimeEntity{
+@Access(AccessType.FIELD)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE")
+public class Event extends BaseTimeEntity{
     @Id
-    @Column(name = "MEETING_ID")
+    @Column(name = "EVENT_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -23,22 +24,13 @@ public class Meeting extends BaseTimeEntity{
 
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private User user;
+
     @Column(nullable = false)
     private LocalDateTime startAt;
 
     @Column(nullable = false)
     private LocalDateTime finishAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "REMINDER_ID")
-    private Reminder reminder;
-
-    @Builder
-    public Meeting(String title, String description, LocalDateTime startAt, LocalDateTime finishAt, Reminder reminder) {
-        this.title = title;
-        this.description = description;
-        this.startAt = startAt;
-        this.finishAt = finishAt;
-        this.reminder = reminder;
-    }
 }
