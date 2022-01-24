@@ -1,19 +1,26 @@
 package com.toy.plany.entity;
 
+import com.toy.plany.entity.enums.UserPosition;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Access(AccessType.FIELD)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity {
+public class Member extends BaseTimeEntity {
     @Id
-    @Column(name = "USER_ID")
+    @Column(name = "MEMBER_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -22,6 +29,9 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String password;
+
+//    @Column(name = "auth")
+//    private String auth;
 
     @Column(nullable = false)
     private String slackUid;
@@ -39,8 +49,12 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "COLOR_ID")
     private Color color;
 
+    @Column(length = 10, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserPosition position;
+
     @Builder
-    public User(String employeeNum, String password, String slackUid, String name, String email, Department department, Color color) {
+    public Member(String employeeNum, String password, String slackUid, String name, String email, Department department, Color color) {
         this.employeeNum = employeeNum;
         this.password = password;
         this.slackUid = slackUid;

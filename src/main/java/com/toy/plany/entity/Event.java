@@ -25,8 +25,8 @@ public class Event extends BaseTimeEntity{
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
-    private User user;
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
 
     @Column(nullable = false)
     private LocalDateTime startAt;
