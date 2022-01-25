@@ -18,5 +18,4 @@ public enum Color {
     public void use(Color color){
         color.isUsed = true;
     }
-
 }

@@ -1,2 +1,5 @@
-package com.toy.plany.entity.enums;public enum ScheduleType {
+package com.toy.plany.entity.enums;
+
+public enum ScheduleType {
+    PERSONAL, HOLIDAY, MEETING
 }
