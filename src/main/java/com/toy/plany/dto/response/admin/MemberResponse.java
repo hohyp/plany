@@ -1,4 +1,4 @@
-package com.toy.plany.dto.response.member;
+package com.toy.plany.dto.response.admin;
 
 import com.toy.plany.entity.enums.MemberPosition;
 import lombok.Builder;
