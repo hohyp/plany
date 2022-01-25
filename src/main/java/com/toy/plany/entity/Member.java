@@ -25,9 +25,6 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-//    @Column(name = "auth")
-//    private String auth;
-
     @Column(nullable = false)
     private String slackUid;
 
@@ -49,7 +46,7 @@ public class Member extends BaseTimeEntity {
     private MemberPosition position;
 
     @Builder
-    public Member(String employeeNum, String password, String slackUid, String name, String email, Department department, Color color) {
+    public Member(String employeeNum, String password, String slackUid, String name, String email, Department department, Color color, MemberPosition position) {
         this.employeeNum = employeeNum;
         this.password = password;
         this.slackUid = slackUid;
@@ -57,5 +54,6 @@ public class Member extends BaseTimeEntity {
         this.email = email;
         this.department = department;
         this.color = color;
+        this.position = position;
     }
 }

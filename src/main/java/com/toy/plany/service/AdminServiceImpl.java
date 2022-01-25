@@ -40,6 +40,7 @@ public class AdminServiceImpl implements AdminService {
                 .name(request.getName())
                 .department(department)
                 .color(color)
+                .position(request.getPosition())
                 .build();
         Member savedMember = memberRepo.save(member);
         return createMemberDto(savedMember);
@@ -71,6 +72,8 @@ public class AdminServiceImpl implements AdminService {
                 .color(member.getColor().toString())
                 .department(member.getDepartment().getName())
                 .position(member.getPosition())
+                .slackUid(member.getSlackUid())
+                .email(member.getEmail())
                 .build();
     }
 
