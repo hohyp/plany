@@ -6,8 +6,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@Builder
 public class DepartmentResponse {
     private Long id;
     private String name;
+
+    @Builder
+    public DepartmentResponse(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
