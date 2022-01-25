@@ -10,8 +10,10 @@ import com.toy.plany.exception.exceptions.DepartmentNotFoundException;
 import com.toy.plany.repository.DepartmentRepo;
 import com.toy.plany.repository.MemberRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class AdminServiceImpl implements AdminService {
 
     private final MemberRepo memberRepo;
