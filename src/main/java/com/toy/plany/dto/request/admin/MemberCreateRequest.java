@@ -1,4 +1,4 @@
-package com.toy.plany.dto.request.member;
+package com.toy.plany.dto.request.admin;
 
 import lombok.Builder;
 import lombok.Getter;

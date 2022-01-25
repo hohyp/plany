@@ -1,7 +1,8 @@
 package com.toy.plany.service;
 
-import com.toy.plany.dto.request.member.MemberCreateRequest;
-import com.toy.plany.dto.response.member.MemberResponse;
+import com.toy.plany.dto.request.admin.MemberCreateRequest;
+import com.toy.plany.dto.response.admin.DepartmentResponse;
+import com.toy.plany.dto.response.admin.MemberResponse;
 import com.toy.plany.entity.Department;
 import com.toy.plany.entity.Member;
 import com.toy.plany.entity.enums.Color;
@@ -11,7 +12,7 @@ import com.toy.plany.repository.MemberRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-public class MemberServiceImpl implements MemberService {
+public class AdminServiceImpl implements AdminService {
 
     private final MemberRepo memberRepo;
 
@@ -19,7 +20,7 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Autowired
-    public MemberServiceImpl(MemberRepo memberRepo, DepartmentRepo departmentRepo) {
+    public AdminServiceImpl(MemberRepo memberRepo, DepartmentRepo departmentRepo) {
         this.memberRepo = memberRepo;
         this.departmentRepo = departmentRepo;
     }
@@ -42,6 +43,15 @@ public class MemberServiceImpl implements MemberService {
         return createMemberDto(savedMember);
     }
 
+    @Transactional
+    public DepartmentResponse createDepartment(String name) {
+        Department department = Department.builder()
+                .name(name)
+                .build();
+        Department savedDepartment = departmentRepo.save(department);
+        return createDepartmentDto(savedDepartment);
+    }
+
     private Color getColorByRandom(){
         //TODO Random return, 없으면 예외 발생하도록 수정
         return Color.RED;
@@ -59,6 +69,13 @@ public class MemberServiceImpl implements MemberService {
                 .color(member.getColor().toString())
                 .department(member.getDepartment().getName())
                 .position(member.getPosition())
+                .build();
+    }
+
+    private DepartmentResponse createDepartmentDto(Department department){
+        return DepartmentResponse.builder()
+                .id(department.getId())
+                .name(department.getName())
                 .build();
     }
 }
