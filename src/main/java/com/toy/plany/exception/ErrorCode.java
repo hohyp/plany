@@ -21,8 +21,8 @@ public enum ErrorCode {
     //Schedule
     SCHEDULE_NOT_FOUND("S1001", "Schedule Not Found"),
 
-    //Member
-    MEMBER_NOT_FOUND("M001", "Member Not Found"),
+    //User
+    USER_NOT_FOUND("U001", "User Not Found"),
 
     //Color
     INSUFFICIENT_COLOR_ERROR("C001", "Insufficient Color Error"),

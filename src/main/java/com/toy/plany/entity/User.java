@@ -1,7 +1,7 @@
 package com.toy.plany.entity;
 
 import com.toy.plany.entity.enums.Color;
-import com.toy.plany.entity.enums.MemberPosition;
+import com.toy.plany.entity.enums.UserPosition;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,19 +13,21 @@ import javax.persistence.*;
 @Getter
 @Access(AccessType.FIELD)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity {
+public class User extends BaseTimeEntity {
+
+    public static final String DEFAULT_PASSWORD = "123456";
+
     @Id
-    @Column(name = "MEMBER_ID")
+    @Column(name = "USER_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String employeeNum;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String slackUid;
 
     @Column(nullable = false)
@@ -41,12 +43,10 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Color color;
 
-    @Column(length = 10, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private MemberPosition position;
+    private String position;
 
     @Builder
-    public Member(String employeeNum, String password, String slackUid, String name, String email, Department department, Color color, MemberPosition position) {
+    public User(String employeeNum, String password, String slackUid, String name, String email, Department department, Color color, String position) {
         this.employeeNum = employeeNum;
         this.password = password;
         this.slackUid = slackUid;

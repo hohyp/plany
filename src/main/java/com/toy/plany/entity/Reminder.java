@@ -25,7 +25,7 @@ public class Reminder extends BaseTimeEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
-    private Member member;
+    private User member;
 
     @Column(nullable = false)
     private LocalDateTime remindAt;
@@ -35,7 +35,7 @@ public class Reminder extends BaseTimeEntity{
     private RemindStatus status;
 
     @Builder
-    public Reminder(Schedule schedule, Member member, LocalDateTime remindAt, RemindStatus status) {
+    public Reminder(Schedule schedule, User member, LocalDateTime remindAt, RemindStatus status) {
         this.schedule = schedule;
         this.member = member;
         this.remindAt = remindAt;

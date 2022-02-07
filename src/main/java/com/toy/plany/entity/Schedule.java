@@ -21,6 +21,6 @@ public class Schedule {
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
-    private Member member;
+    @JoinColumn(name = "USER_ID")
+    private User member;
 }

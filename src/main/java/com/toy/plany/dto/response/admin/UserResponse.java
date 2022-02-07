@@ -1,6 +1,8 @@
 package com.toy.plany.dto.response.admin;
 
-import com.toy.plany.entity.enums.MemberPosition;
+import com.toy.plany.entity.enums.Color;
+import com.toy.plany.entity.enums.FontColor;
+import com.toy.plany.entity.enums.UserPosition;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,14 +12,13 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
-public class MemberResponse {
+public class UserResponse {
     @NotNull
     private Long id;
 
     @NotBlank
     private String employeeNum;
 
-    @NotBlank
     private String slackUid;
 
     @NotBlank
@@ -32,10 +33,13 @@ public class MemberResponse {
     @NotBlank
     private String color;
 
-    private MemberPosition position;
+    @NotBlank
+    private String fontColor;
+
+    private String position;
 
     @Builder
-    public MemberResponse(Long id, String employeeNum, String slackUid, String name, String email, String department, String color, MemberPosition position) {
+    public UserResponse(Long id, String employeeNum, String slackUid, String name, String email, String department, String color, String fontColor, String position) {
         this.id = id;
         this.employeeNum = employeeNum;
         this.slackUid = slackUid;
@@ -43,6 +47,7 @@ public class MemberResponse {
         this.email = email;
         this.department = department;
         this.color = color;
+        this.fontColor = fontColor;
         this.position = position;
     }
 }

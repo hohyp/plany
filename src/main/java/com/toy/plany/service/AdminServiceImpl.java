@@ -1,49 +1,90 @@
 package com.toy.plany.service;
 
-import com.toy.plany.dto.request.admin.MemberCreateRequest;
+import com.toy.plany.dto.request.admin.UserCreateRequest;
 import com.toy.plany.dto.response.admin.DepartmentResponse;
-import com.toy.plany.dto.response.admin.MemberResponse;
+import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.entity.Department;
-import com.toy.plany.entity.Member;
+import com.toy.plany.entity.User;
 import com.toy.plany.entity.enums.Color;
 import com.toy.plany.exception.exceptions.DepartmentNotFoundException;
+import com.toy.plany.exception.exceptions.UserNotFoundException;
 import com.toy.plany.repository.DepartmentRepo;
-import com.toy.plany.repository.MemberRepo;
+import com.toy.plany.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class AdminServiceImpl implements AdminService {
 
-    private final MemberRepo memberRepo;
-
+    private final UserRepo userRepo;
     private final DepartmentRepo departmentRepo;
 
-
     @Autowired
-    public AdminServiceImpl(MemberRepo memberRepo, DepartmentRepo departmentRepo) {
-        this.memberRepo = memberRepo;
+    public AdminServiceImpl(UserRepo userRepo, DepartmentRepo departmentRepo) {
+        this.userRepo = userRepo;
         this.departmentRepo = departmentRepo;
     }
 
+    @Override
     @Transactional
-    public MemberResponse createUser(MemberCreateRequest request) {
+    public UserResponse createUser(UserCreateRequest request) {
         Department department = getDepartmentById(request.getDepartmentId());
         Color color = getColorByRandom();
-        Member member = Member.builder()
+        User user = User.builder()
                 .employeeNum(request.getEmployeeNum())
-                //TODO 패스워드 암호화
-                .password(request.getPassword())
-                .slackUid(request.getSlackUid())
+                .password(User.DEFAULT_PASSWORD)
                 .email(request.getEmail())
                 .name(request.getName())
                 .department(department)
                 .color(color)
                 .position(request.getPosition())
                 .build();
-        Member savedMember = memberRepo.save(member);
-        return createMemberDto(savedMember);
+        User savedUser = userRepo.save(user);
+        return createUserDto(savedUser);
+    }
+
+    @Override
+    public UserResponse readUserByEmployeeNumber(String employeeNumber) {
+        User user = findUserByEmployeeNum(employeeNumber);
+        return createUserDto(user);
+    }
+
+    @Transactional(readOnly = true)
+    private User findUserByEmployeeNum(String employeeNumber) {
+        return userRepo.findByEmployeeNum(employeeNumber).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    private User findUserById(Long userId) {
+        return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public List<UserResponse> readUserList() {
+        return findAllUser().stream().map(user -> createUserDto(user)).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    private List<User> findAllUser() {
+        return userRepo.findAll();
+    }
+
+    @Override
+    public List<UserResponse> deleteUser(Long userId) {
+        deleteUserFromRepo(userId);
+        return readUserList();
+    }
+
+    @Transactional
+    private void deleteUserFromRepo(Long userId) {
+        User user = findUserById(userId);
+        //TODO 삭제 예외 에러 발생
+        userRepo.delete(user);
     }
 
     @Transactional
@@ -55,7 +96,29 @@ public class AdminServiceImpl implements AdminService {
         return createDepartmentDto(savedDepartment);
     }
 
-    private Color getColorByRandom(){
+    @Override
+    public List<DepartmentResponse> readDepartmentList() {
+        return findAllDepartment().stream().map(this::createDepartmentDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    private List<Department> findAllDepartment() {
+        return departmentRepo.findAll();
+    }
+
+    @Override
+    public List<DepartmentResponse> deleteDepartment(Long departmentId) {
+        deleteDepartmentFromRepo(departmentId);
+        return readDepartmentList();
+    }
+
+    @Transactional
+    private void deleteDepartmentFromRepo(Long departmentId) {
+        Department department = getDepartmentById(departmentId);
+        departmentRepo.delete(department);
+    }
+
+    private Color getColorByRandom() {
         //TODO Random return, 없으면 예외 발생하도록 수정
         return Color.RED;
     }
@@ -64,20 +127,21 @@ public class AdminServiceImpl implements AdminService {
         return departmentRepo.findById(departmentId).orElseThrow(DepartmentNotFoundException::new);
     }
 
-    private MemberResponse createMemberDto(Member member) {
-        return MemberResponse.builder()
-                .id(member.getId())
-                .employeeNum(member.getEmployeeNum())
-                .name(member.getName())
-                .color(member.getColor().toString())
-                .department(member.getDepartment().getName())
-                .position(member.getPosition())
-                .slackUid(member.getSlackUid())
-                .email(member.getEmail())
+    private UserResponse createUserDto(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .employeeNum(user.getEmployeeNum())
+                .name(user.getName())
+                .color(user.getColor().getCode())
+                .fontColor(user.getColor().getFontColor().getCode())
+                .department(user.getDepartment().getName())
+                .position(user.getPosition())
+                .slackUid(user.getSlackUid())
+                .email(user.getEmail())
                 .build();
     }
 
-    private DepartmentResponse createDepartmentDto(Department department){
+    private DepartmentResponse createDepartmentDto(Department department) {
         return DepartmentResponse.builder()
                 .id(department.getId())
                 .name(department.getName())

@@ -1,5 +1,5 @@
 package com.toy.plany.entity.enums;
 
 public enum ScheduleType {
-    PERSONAL, HOLIDAY, MEETING
+    PERSONAL, MEETING
 }
