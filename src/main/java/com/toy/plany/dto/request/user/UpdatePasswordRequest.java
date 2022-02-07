@@ -8,16 +8,12 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @NoArgsConstructor
-public class LoginRequest {
-    @NotBlank
-    private String employeeNumber;
-
+public class UpdatePasswordRequest {
     @NotBlank
     private String password;
 
     @Builder
-    public LoginRequest(String employeeNumber, String password) {
-        this.employeeNumber = employeeNumber;
+    public UpdatePasswordRequest(String password) {
         this.password = password;
     }
 }

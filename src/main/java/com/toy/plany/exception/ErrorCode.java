@@ -23,6 +23,7 @@ public enum ErrorCode {
 
     //User
     USER_NOT_FOUND("U001", "User Not Found"),
+    INCORRECT_PASSWORD("U002", "Incorrect Password"),
 
     //Color
     INSUFFICIENT_COLOR_ERROR("C001", "Insufficient Color Error"),

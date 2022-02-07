@@ -1,6 +1,7 @@
 package com.toy.plany.exception;
 
 import com.toy.plany.exception.exceptions.DepartmentNotFoundException;
+import com.toy.plany.exception.exceptions.IncorrectPasswordException;
 import com.toy.plany.exception.exceptions.InsufficientColorException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,13 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(IncorrectPasswordException.class)
+    protected ResponseEntity<ErrorResponse> IncorrectPasswordExceptionHandler(
+            IncorrectPasswordException e) {
+        final ErrorResponse response = ErrorResponse.of(e.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     protected ResponseEntity<ErrorResponse> UserNotFoundExceptionHandler(

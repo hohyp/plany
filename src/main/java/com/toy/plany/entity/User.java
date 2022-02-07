@@ -56,4 +56,12 @@ public class User extends BaseTimeEntity {
         this.color = color;
         this.position = position;
     }
+
+    public void updateSlackUid(String slackUid) {
+        this.slackUid = slackUid;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
