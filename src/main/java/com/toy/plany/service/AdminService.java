@@ -13,12 +13,12 @@ public interface AdminService {
 
     List<UserResponse> readUserList();
 
-    List<UserResponse> deleteUser(Long userId);
+    Boolean deleteUser(Long userId);
 
     DepartmentResponse createDepartment(String name);
 
     List<DepartmentResponse> readDepartmentList();
 
-    List<DepartmentResponse> deleteDepartment(Long departmentId);
+    Boolean deleteDepartment(Long departmentId);
 
 }

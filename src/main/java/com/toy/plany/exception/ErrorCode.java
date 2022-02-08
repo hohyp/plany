@@ -14,6 +14,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR("C004", "Internal Server Error"),
     INVALID_TYPE_VALUE("C005", "Invalid Type Value"),
     HANDLE_ACCESS_DENIED("C006", "Access Denied"),
+    DELETE_FAILED("C007", "Delete Failed"),
 
     //Event
     EVENT_NOT_FOUND("E001", "Event Not Found"),

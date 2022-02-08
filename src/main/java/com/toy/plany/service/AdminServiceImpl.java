@@ -6,6 +6,7 @@ import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.entity.Department;
 import com.toy.plany.entity.User;
 import com.toy.plany.entity.enums.Color;
+import com.toy.plany.exception.exceptions.DeleteFailException;
 import com.toy.plany.exception.exceptions.DepartmentNotFoundException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
 import com.toy.plany.repository.DepartmentRepo;
@@ -13,6 +14,7 @@ import com.toy.plany.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,16 +75,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<UserResponse> deleteUser(Long userId) {
-        deleteUserFromRepo(userId);
-        return readUserList();
+    public Boolean deleteUser(Long userId) {
+        return deleteUserFromRepo(userId);
     }
 
     @Transactional
-    private void deleteUserFromRepo(Long userId) {
-        User user = findUserById(userId);
-        //TODO 삭제 예외 에러 발생
-        userRepo.delete(user);
+    private Boolean deleteUserFromRepo(Long userId) {
+        try {
+            userRepo.deleteById(userId);
+            return true;
+        } catch (Exception e) {
+            throw new DeleteFailException();
+        }
     }
 
     @Transactional
@@ -105,15 +109,18 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<DepartmentResponse> deleteDepartment(Long departmentId) {
-        deleteDepartmentFromRepo(departmentId);
-        return readDepartmentList();
+    public Boolean deleteDepartment(Long departmentId) {
+        return deleteDepartmentFromRepo(departmentId);
     }
 
     @Transactional
-    private void deleteDepartmentFromRepo(Long departmentId) {
-        Department department = getDepartmentById(departmentId);
-        departmentRepo.delete(department);
+    private Boolean deleteDepartmentFromRepo(Long departmentId) {
+        try {
+            departmentRepo.deleteById(departmentId);
+            return true;
+        } catch (Exception e) {
+            throw new DeleteFailException();
+        }
     }
 
     private Color getColorByRandom() {
@@ -121,6 +128,7 @@ public class AdminServiceImpl implements AdminService {
         return Color.RED;
     }
 
+    @Transactional(readOnly = true)
     private Department getDepartmentById(Long departmentId) {
         return departmentRepo.findById(departmentId).orElseThrow(DepartmentNotFoundException::new);
     }

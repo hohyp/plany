@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @RestController
@@ -39,8 +40,8 @@ public class AdminController {
     }
 
     @DeleteMapping("/user")
-    public ResponseEntity<List<UserResponse>> deleteUser(@RequestParam Long userId) {
-        List<UserResponse> res = adminService.deleteUser(userId);
+    public ResponseEntity<Boolean> deleteUser(@RequestParam Long userId) {
+        Boolean res = adminService.deleteUser(userId);
         return ResponseEntity.ok(res);
     }
 
@@ -60,8 +61,8 @@ public class AdminController {
 
 
     @DeleteMapping("/department")
-    public ResponseEntity<List<DepartmentResponse>> deleteDepartment(@RequestParam Long departmentId) {
-        List<DepartmentResponse> res = adminService.deleteDepartment(departmentId);
-        return ResponseEntity.ok(res);
+    public ResponseEntity<Boolean> deleteDepartment(@RequestParam Long departmentId) {
+        adminService.deleteDepartment(departmentId);
+        return ResponseEntity.ok(true);
     }
 }
