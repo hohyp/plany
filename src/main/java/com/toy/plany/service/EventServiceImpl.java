@@ -1,7 +1,185 @@
 package com.toy.plany.service;
 
+import com.toy.plany.dto.request.event.EventCreateRequest;
+import com.toy.plany.dto.response.admin.UserResponse;
+import com.toy.plany.dto.response.event.EventResponse;
+import com.toy.plany.dto.response.event.EventUserResponse;
+import com.toy.plany.entity.Event;
+import com.toy.plany.entity.Schedule;
+import com.toy.plany.entity.User;
+import com.toy.plany.exception.exceptions.*;
+import com.toy.plany.repository.EventRepo;
+import com.toy.plany.repository.ScheduleRepo;
+import com.toy.plany.repository.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class EventServiceImpl {
+public class EventServiceImpl implements EventService {
+
+    private EventRepo eventRepo;
+    private UserRepo userRepo;
+    private ScheduleRepo scheduleRepo;
+
+    @Autowired
+    public EventServiceImpl(EventRepo eventRepo, UserRepo userRepo, ScheduleRepo scheduleRepo) {
+        this.eventRepo = eventRepo;
+        this.userRepo = userRepo;
+        this.scheduleRepo = scheduleRepo;
+    }
+
+    /**
+     * 1. 이벤트 생성
+     * 2. 유저 별 스케줄 생성
+     * 3. 이벤트에 scheduleList 업데이트
+     * 4. scheduleList 으로 eventResponse 에 넣을 userList 생성
+     * 5.  eventResponse 생성하여 리턴
+     * 6. scheduleList 기반으로 slack created alarm
+     *
+     * @param userId
+     * @param request
+     * @return
+     */
+    @Override
+    public EventResponse createEvent(Long userId, EventCreateRequest request) {
+        User organizer = findUserById(userId);
+        Event event = Event.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .organizer(organizer)
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
+                .build();
+        Event savedEvent = saveEvent(event);
+        List<Schedule> scheduleList = createScheduleList(savedEvent, request.getAttendances());
+        return createEventDto(savedEvent.updateScheduleList(scheduleList));
+    }
+
+    @Transactional
+    private Event saveEvent(Event event) {
+        try {
+            return eventRepo.save(event);
+        } catch (Exception e) {
+            throw new SaveFailException();
+        }
+    }
+
+    private void validateScheduleTime() {
+        //TODO 스케줄 생성 전 가용시간 검증
+    }
+
+
+    private List<Schedule> createScheduleList(Event event, List<Long> attendancesList) {
+        List<Schedule> scheduleList = new ArrayList<>();
+        for (Long userId : attendancesList) {
+            User user = findUserById(userId);
+            validateScheduleTime();
+            Schedule schedule = createSchedule(user, event);
+            scheduleList.add(schedule);
+        }
+        return scheduleList;
+    }
+
+
+    private Schedule createSchedule(User user, Event event) {
+        Schedule schedule = Schedule.builder()
+                .user(user)
+                .event(event)
+                .build();
+        return savedSchedule(schedule);
+    }
+
+    @Transactional
+    private Schedule savedSchedule(Schedule schedule) {
+        try {
+            return scheduleRepo.save(schedule);
+        } catch (Exception e) {
+            throw new SaveFailException();
+        }
+    }
+
+    private void sendCreatedAlarm() {
+
+    }
+
+    @Transactional(readOnly = true)
+    private User findUserById(Long userId) {
+        return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public Boolean deleteEvent(Long userId, Long eventId) {
+        Event event = findEventById(eventId);
+        User user = findUserById(userId);
+        if (validateOrganizer(event.getOrganizer(), user))
+            return deleteEventFromRepo(event);
+        else
+            throw new InvalidOrganizerException();
+    }
+
+    private Boolean deleteEventFromRepo(Event event) {
+        try {
+            eventRepo.delete(event);
+            return true;
+        } catch (Exception e) {
+            throw new DeleteFailException();
+        }
+    }
+
+    private Boolean validateOrganizer(User organizer, User userId) {
+        if (organizer == userId)
+            return true;
+        return false;
+    }
+
+    @Transactional(readOnly = true)
+    private Event findEventById(Long eventId) {
+        return eventRepo.findById(eventId).orElseThrow(EventNotFoundException::new);
+    }
+
+
+    private void sentCanceledAlarm() {
+
+    }
+
+    private void sendSlackDM() {
+
+    }
+
+    private List<EventUserResponse> createAttendantsList(List<Schedule> scheduleList) {
+        List<EventUserResponse> attendantsList = new ArrayList<>();
+        for (Schedule schedule : scheduleList) {
+            User user = schedule.getUser();
+            attendantsList.add(createEventUserDto(user));
+        }
+        return attendantsList;
+    }
+
+    private EventUserResponse createEventUserDto(User user) {
+        return EventUserResponse.builder()
+                .id(user.getId())
+                .employeeNum(user.getEmployeeNum())
+                .name(user.getName())
+                .color(user.getColor().getCode())
+                .fontColor(user.getColor().getFontColor().getCode())
+                .department(user.getDepartment().getName())
+                .position(user.getPosition())
+                .build();
+    }
+
+    private EventResponse createEventDto(Event event) {
+        return EventResponse.builder()
+                .eventId(event.getId())
+                .title(event.getTitle())
+                .description(event.getDescription())
+                .organizer(createEventUserDto(event.getOrganizer()))
+                .attendances(createAttendantsList(event.getScheduleList()))
+                .startTime(event.getStartTime())
+                .endTime(event.getEndTime())
+                .build();
+    }
 }

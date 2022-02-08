@@ -4,9 +4,7 @@ import com.toy.plany.dto.request.event.EventCreateRequest;
 import com.toy.plany.dto.response.event.EventResponse;
 
 public interface EventService {
-    EventResponse createEvent(EventCreateRequest request);
+    EventResponse createEvent(Long userId, EventCreateRequest request);
 
-    Boolean deleteEvent(Long eventId);
-
-
+    Boolean deleteEvent(Long userId, Long eventId);
 }

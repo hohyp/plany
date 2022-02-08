@@ -15,9 +15,11 @@ public enum ErrorCode {
     INVALID_TYPE_VALUE("C005", "Invalid Type Value"),
     HANDLE_ACCESS_DENIED("C006", "Access Denied"),
     DELETE_FAILED("C007", "Delete Failed"),
+    SAVE_FAILED("C008", "Save Failed"),
 
     //Event
     EVENT_NOT_FOUND("E001", "Event Not Found"),
+    INVALID_ORGANIZER("E002", "Invalid Organizer"),
 
     //Schedule
     SCHEDULE_NOT_FOUND("S1001", "Schedule Not Found"),
