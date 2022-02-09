@@ -1,6 +1,7 @@
 package com.toy.plany.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.toy.plany.entity.enums.EventStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,8 +42,12 @@ public class Event extends BaseTimeEntity {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime endTime;
 
+    @Column(length = 10, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EventStatus status;
+
     @Builder
-    public Event(Long id, String title, String description, User organizer, List<Schedule> scheduleList, LocalDateTime startTime, LocalDateTime endTime) {
+    public Event(Long id, String title, String description, User organizer, List<Schedule> scheduleList, LocalDateTime startTime, LocalDateTime endTime, EventStatus status) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -50,10 +55,16 @@ public class Event extends BaseTimeEntity {
         this.scheduleList = scheduleList;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.status = status;
     }
 
     public Event updateScheduleList(List<Schedule> scheduleList) {
         this.scheduleList = scheduleList;
+        return this;
+    }
+
+    public Event updateStatus(EventStatus status){
+        this.status = status;
         return this;
     }
 }

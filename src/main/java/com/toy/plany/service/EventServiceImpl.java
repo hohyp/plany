@@ -1,19 +1,21 @@
 package com.toy.plany.service;
 
 import com.toy.plany.dto.request.event.EventCreateRequest;
-import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.dto.response.event.EventResponse;
 import com.toy.plany.dto.response.event.EventUserResponse;
 import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
+import com.toy.plany.entity.enums.EventStatus;
 import com.toy.plany.exception.exceptions.*;
 import com.toy.plany.repository.EventRepo;
 import com.toy.plany.repository.ScheduleRepo;
 import com.toy.plany.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,8 @@ import java.util.List;
 @Service
 public class EventServiceImpl implements EventService {
 
+    final private String SLACK_POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
+    final private String SLACK_BOT_TOKEN = "xoxb-2951361842000-2920955339014-VY96e98k2A7qiKjFzaiRKnp6";
     private EventRepo eventRepo;
     private UserRepo userRepo;
     private ScheduleRepo scheduleRepo;
@@ -34,7 +38,7 @@ public class EventServiceImpl implements EventService {
 
     /**
      * 1. 이벤트 생성
-     * 2. 유저 별 스케줄 생성
+     * 2. 유저 별 가용시간 검증 후 스케줄 생성 안되면 롤백 저기까지 되도록
      * 3. 이벤트에 scheduleList 업데이트
      * 4. scheduleList 으로 eventResponse 에 넣을 userList 생성
      * 5.  eventResponse 생성하여 리턴
@@ -53,10 +57,13 @@ public class EventServiceImpl implements EventService {
                 .organizer(organizer)
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
+                .status(EventStatus.CREATED)
                 .build();
         Event savedEvent = saveEvent(event);
         List<Schedule> scheduleList = createScheduleList(savedEvent, request.getAttendances());
-        return createEventDto(savedEvent.updateScheduleList(scheduleList));
+        savedEvent.updateScheduleList(scheduleList);
+        sendAlarm(event);
+        return createEventDto(savedEvent);
     }
 
     @Transactional
@@ -71,7 +78,6 @@ public class EventServiceImpl implements EventService {
     private void validateScheduleTime() {
         //TODO 스케줄 생성 전 가용시간 검증
     }
-
 
     private List<Schedule> createScheduleList(Event event, List<Long> attendancesList) {
         List<Schedule> scheduleList = new ArrayList<>();
@@ -90,11 +96,11 @@ public class EventServiceImpl implements EventService {
                 .user(user)
                 .event(event)
                 .build();
-        return savedSchedule(schedule);
+        return saveSchedule(schedule);
     }
 
     @Transactional
-    private Schedule savedSchedule(Schedule schedule) {
+    private Schedule saveSchedule(Schedule schedule) {
         try {
             return scheduleRepo.save(schedule);
         } catch (Exception e) {
@@ -102,8 +108,11 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void sendCreatedAlarm() {
-
+    private void sendAlarm(Event event) {
+        List<Schedule> scheduleList = event.getScheduleList();
+        for (Schedule schedule : scheduleList) {
+            sendSlackDM(schedule.getUser().getSlackUid(), event.getOrganizer().getName(), event.getTitle(), event.getStatus().getValue());
+        }
     }
 
     @Transactional(readOnly = true)
@@ -115,16 +124,18 @@ public class EventServiceImpl implements EventService {
     public Boolean deleteEvent(Long userId, Long eventId) {
         Event event = findEventById(eventId);
         User user = findUserById(userId);
-        if (validateOrganizer(event.getOrganizer(), user))
-            return deleteEventFromRepo(event);
-        else
+        if (validateOrganizer(event.getOrganizer(), user)) {
+            event.updateStatus(EventStatus.CANCELED);
+            sendAlarm(event);
+            deleteEventFromRepo(event);
+            return true;
+        } else
             throw new InvalidOrganizerException();
     }
 
-    private Boolean deleteEventFromRepo(Event event) {
+    private void deleteEventFromRepo(Event event) {
         try {
             eventRepo.delete(event);
-            return true;
         } catch (Exception e) {
             throw new DeleteFailException();
         }
@@ -141,13 +152,25 @@ public class EventServiceImpl implements EventService {
         return eventRepo.findById(eventId).orElseThrow(EventNotFoundException::new);
     }
 
+    private void sendSlackDM(String slackUid, String organizerName, String scheduleTitle, String reminderType) {
+        try {
 
-    private void sentCanceledAlarm() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + SLACK_BOT_TOKEN);
+            headers.add("Content-type", "application/json; charset=utf-8");
 
-    }
 
-    private void sendSlackDM() {
+            String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " By " + organizerName + " : " + scheduleTitle + "\"}";
 
+            HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
+
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.exchange(SLACK_POST_MESSAGE_URL, HttpMethod.POST, requestEntity, String.class);
+
+        } catch (Exception e) {
+            //TODO 예외처리
+            System.out.println("에러 발생");
+        }
     }
 
     private List<EventUserResponse> createAttendantsList(List<Schedule> scheduleList) {

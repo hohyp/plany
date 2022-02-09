@@ -16,7 +16,7 @@ public class ErrorResponse {
         this.code = code.getCode();
     }
 
-    public static ErrorResponse of(final ErrorCode code) {
+    public static ErrorResponse from(final ErrorCode code) {
         return new ErrorResponse(code);
     }
 }

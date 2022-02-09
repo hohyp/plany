@@ -18,35 +18,35 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IncorrectPasswordException.class)
     protected ResponseEntity<ErrorResponse> IncorrectPasswordExceptionHandler(
             IncorrectPasswordException e) {
-        final ErrorResponse response = ErrorResponse.of(e.getErrorCode());
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     protected ResponseEntity<ErrorResponse> UserNotFoundExceptionHandler(
             UserNotFoundException e) {
-        final ErrorResponse response = ErrorResponse.of(e.getErrorCode());
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InsufficientColorException.class)
     protected ResponseEntity<ErrorResponse> InsufficientColorExceptionHandler(
             InsufficientColorException e) {
-        final ErrorResponse response = ErrorResponse.of(e.getErrorCode());
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DepartmentNotFoundException.class)
     protected ResponseEntity<ErrorResponse> DepartmentNotFoundExceptionHandler(
             DepartmentNotFoundException e) {
-        final ErrorResponse response = ErrorResponse.of(e.getErrorCode());
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     protected ResponseEntity<ErrorResponse> InvalidInputExceptionHandler(
             SQLIntegrityConstraintViolationException e) {
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE);
+        final ErrorResponse response = ErrorResponse.from(ErrorCode.INVALID_INPUT_VALUE);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
