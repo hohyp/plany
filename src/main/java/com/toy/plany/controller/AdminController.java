@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import java.net.http.HttpResponse;
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
