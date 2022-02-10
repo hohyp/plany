@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class EventServiceImpl implements EventService {
+public class EventServiceImpl implements EventService, SendAlarmService {
 
     final private String SLACK_POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
-    final private String SLACK_BOT_TOKEN = "xoxb-2951361842000-2920955339014-VY96e98k2A7qiKjFzaiRKnp6";
+    final private String SLACK_BOT_TOKEN = "xoxb-2951361842000-2920955339014-JKVx7lEUhr9kbseCxNZjHmg2";
     private EventRepo eventRepo;
     private UserRepo userRepo;
     private ScheduleRepo scheduleRepo;
@@ -108,7 +108,8 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void sendAlarm(Event event) {
+    @Override
+    public void sendAlarm(Event event) {
         List<Schedule> scheduleList = event.getScheduleList();
         for (Schedule schedule : scheduleList) {
             sendSlackDM(schedule.getUser().getSlackUid(), event.getOrganizer().getName(), event.getTitle(), event.getStatus().getValue());
@@ -166,6 +167,8 @@ public class EventServiceImpl implements EventService {
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.exchange(SLACK_POST_MESSAGE_URL, HttpMethod.POST, requestEntity, String.class);
+
+            //TODO response 검사하여 예외처리
 
         } catch (Exception e) {
             //TODO 예외처리

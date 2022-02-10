@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface ScheduleService {
     ScheduleResponse readSchedule(Long scheduleId);
+
     List<ScheduleResponse> readScheduleListByUser(Long userId);
+
     List<ScheduleResponse> readScheduleListByUserList(List<Long> userIdList);
 }
