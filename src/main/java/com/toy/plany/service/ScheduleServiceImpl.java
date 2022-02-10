@@ -3,23 +3,29 @@ package com.toy.plany.service;
 import com.toy.plany.dto.response.event.EventResponse;
 import com.toy.plany.dto.response.event.EventUserResponse;
 import com.toy.plany.dto.response.event.ScheduleResponse;
+import com.toy.plany.dto.response.event.UserScheduleResponse;
 import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
 import com.toy.plany.exception.exceptions.ScheduleNotFoundException;
+import com.toy.plany.exception.exceptions.UserNotFoundException;
 import com.toy.plany.repository.ScheduleRepo;
+import com.toy.plany.repository.UserRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class ScheduleServiceImpl implements ScheduleService{
+public class ScheduleServiceImpl implements ScheduleService {
 
+    private UserRepo userRepo;
     private ScheduleRepo scheduleRepo;
 
-    public ScheduleServiceImpl(ScheduleRepo scheduleRepo) {
+    public ScheduleServiceImpl(ScheduleRepo scheduleRepo, UserRepo userRepo) {
         this.scheduleRepo = scheduleRepo;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -28,21 +34,40 @@ public class ScheduleServiceImpl implements ScheduleService{
         return createScheduleDto(schedule);
     }
 
-    private Schedule findScheduleById(Long scheduleId){
+    private Schedule findScheduleById(Long scheduleId) {
         return scheduleRepo.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
     }
 
     @Override
-    public List<ScheduleResponse> readScheduleListByUser(Long userId) {
-        return null;
+    public UserScheduleResponse readScheduleListByUser(Long userId) {
+        User user = findUserById(userId);
+        List<Schedule> scheduleList = getScheduleListByUser(user);
+        return createUserScheduleDto(user, scheduleList);
     }
+
+    private List<Schedule> getScheduleListByUser(User user) {
+        return scheduleRepo.findScheduleByUser(user);
+    }
+
+    private User findUserById(Long userId) {
+        return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
 
     @Override
-    public List<ScheduleResponse> readScheduleListByUserList(List<Long> userIdList) {
+    public List<UserScheduleResponse> readScheduleListByUserList(List<Long> userIdList) {
         return null;
     }
 
-    private ScheduleResponse createScheduleDto(Schedule schedule){
+    private UserScheduleResponse createUserScheduleDto(User user, List<Schedule> scheduleList) {
+        return UserScheduleResponse.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .scheduleResponseList(scheduleList.stream().map(schedule -> createScheduleDto(schedule)).collect(Collectors.toList()))
+                .build();
+    }
+
+    private ScheduleResponse createScheduleDto(Schedule schedule) {
         EventResponse eventResponse = createEventDto(schedule.getEvent());
         return ScheduleResponse.builder()
                 .scheduleId(schedule.getId())
