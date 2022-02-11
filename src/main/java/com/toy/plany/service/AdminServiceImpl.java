@@ -45,18 +45,18 @@ public class AdminServiceImpl implements AdminService {
                 .position(request.getPosition())
                 .build();
         User savedUser = userRepo.save(user);
-        return createUserDto(savedUser);
+        return UserResponse.from(savedUser);
     }
 
     @Override
     public UserResponse readUserByEmployeeNumber(String employeeNumber) {
         User user = findUserByEmployeeNum(employeeNumber);
-        return createUserDto(user);
+        return UserResponse.from(user);
     }
 
     @Transactional(readOnly = true)
     private User findUserByEmployeeNum(String employeeNumber) {
-        return userRepo.findByEmployeeNum(employeeNumber).orElseThrow(UserNotFoundException::new);
+        return userRepo.findUserByEmployeeNum(employeeNumber).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
@@ -66,7 +66,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<UserResponse> readUserList() {
-        return findAllUser().stream().map(user -> createUserDto(user)).collect(Collectors.toList());
+        return findAllUser().stream().map(user -> UserResponse.from(user)).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -95,12 +95,12 @@ public class AdminServiceImpl implements AdminService {
                 .name(name)
                 .build();
         Department savedDepartment = departmentRepo.save(department);
-        return createDepartmentDto(savedDepartment);
+        return DepartmentResponse.from(savedDepartment);
     }
 
     @Override
     public List<DepartmentResponse> readDepartmentList() {
-        return findAllDepartment().stream().map(this::createDepartmentDto).collect(Collectors.toList());
+        return findAllDepartment().stream().map(department -> DepartmentResponse.from(department)).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -131,26 +131,5 @@ public class AdminServiceImpl implements AdminService {
     @Transactional(readOnly = true)
     private Department getDepartmentById(Long departmentId) {
         return departmentRepo.findById(departmentId).orElseThrow(DepartmentNotFoundException::new);
-    }
-
-    private UserResponse createUserDto(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .employeeNum(user.getEmployeeNum())
-                .name(user.getName())
-                .color(user.getColor().getCode())
-                .fontColor(user.getColor().getFontColor().getCode())
-                .department(user.getDepartment().getName())
-                .position(user.getPosition())
-                .slackUid(user.getSlackUid())
-                .email(user.getEmail())
-                .build();
-    }
-
-    private DepartmentResponse createDepartmentDto(Department department) {
-        return DepartmentResponse.builder()
-                .id(department.getId())
-                .name(department.getName())
-                .build();
     }
 }

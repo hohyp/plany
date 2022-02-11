@@ -1,6 +1,7 @@
 package com.toy.plany.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.toy.plany.dto.dtos.FilteredEventDto;
 import com.toy.plany.entity.enums.EventStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,7 +29,7 @@ public class Event extends BaseTimeEntity {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "ORGANIZER_ID")
     private User organizer;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)

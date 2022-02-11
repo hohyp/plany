@@ -2,7 +2,7 @@ package com.toy.plany.service;
 
 import com.toy.plany.dto.request.event.EventCreateRequest;
 import com.toy.plany.dto.response.event.EventResponse;
-import com.toy.plany.dto.response.event.EventUserResponse;
+import com.toy.plany.dto.response.event.AttendantResponse;
 import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
@@ -12,6 +12,7 @@ import com.toy.plany.repository.EventRepo;
 import com.toy.plany.repository.ScheduleRepo;
 import com.toy.plany.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,10 @@ import java.util.List;
 public class EventServiceImpl implements EventService, SendAlarmService {
 
     final private String SLACK_POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
-    final private String SLACK_BOT_TOKEN = "xoxb-2951361842000-2920955339014-JKVx7lEUhr9kbseCxNZjHmg2";
+
+    @Value("${slack.token}")
+    private String SLACK_BOT_TOKEN;
+
     private EventRepo eventRepo;
     private UserRepo userRepo;
     private ScheduleRepo scheduleRepo;
@@ -37,12 +41,12 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     }
 
     /**
-     * 1. 이벤트 생성
-     * 2. 유저 별 가용시간 검증 후 스케줄 생성 안되면 롤백 저기까지 되도록
-     * 3. 이벤트에 scheduleList 업데이트
-     * 4. scheduleList 으로 eventResponse 에 넣을 userList 생성
-     * 5.  eventResponse 생성하여 리턴
-     * 6. scheduleList 기반으로 slack created alarm
+     * 1. 시작시간, 종료시간 검증
+     * 2. 이벤트 생성
+     * 3. 이벤트 참여자들의 일정 생성
+     * 4. 이벤트에 scheduleList 업데이트
+     * 5. scheduleList 기반으로 slack 알람 전송
+     * 6. eventResponse 생성하여 리턴
      *
      * @param userId
      * @param request
@@ -63,7 +67,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         List<Schedule> scheduleList = createScheduleList(savedEvent, request.getAttendances());
         savedEvent.updateScheduleList(scheduleList);
         sendAlarm(event);
-        return createEventDto(savedEvent);
+        return EventResponse.from(savedEvent);
     }
 
     @Transactional
@@ -160,7 +164,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
             headers.add("Authorization", "Bearer " + SLACK_BOT_TOKEN);
             headers.add("Content-type", "application/json; charset=utf-8");
 
-
+            //TODO from, to 추가하기
             String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " By " + organizerName + " : " + scheduleTitle + "\"}";
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
@@ -176,36 +180,4 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         }
     }
 
-    private List<EventUserResponse> createAttendantsList(List<Schedule> scheduleList) {
-        List<EventUserResponse> attendantsList = new ArrayList<>();
-        for (Schedule schedule : scheduleList) {
-            User user = schedule.getUser();
-            attendantsList.add(createEventUserDto(user));
-        }
-        return attendantsList;
-    }
-
-    private EventUserResponse createEventUserDto(User user) {
-        return EventUserResponse.builder()
-                .id(user.getId())
-                .employeeNum(user.getEmployeeNum())
-                .name(user.getName())
-                .color(user.getColor().getCode())
-                .fontColor(user.getColor().getFontColor().getCode())
-                .department(user.getDepartment().getName())
-                .position(user.getPosition())
-                .build();
-    }
-
-    private EventResponse createEventDto(Event event) {
-        return EventResponse.builder()
-                .eventId(event.getId())
-                .title(event.getTitle())
-                .description(event.getDescription())
-                .organizer(createEventUserDto(event.getOrganizer()))
-                .attendances(createAttendantsList(event.getScheduleList()))
-                .startTime(event.getStartTime())
-                .endTime(event.getEndTime())
-                .build();
-    }
 }

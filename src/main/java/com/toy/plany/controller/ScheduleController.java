@@ -1,16 +1,17 @@
 package com.toy.plany.controller;
 
-import com.toy.plany.dto.response.event.ScheduleResponse;
-import com.toy.plany.dto.response.event.UserScheduleResponse;
+import com.toy.plany.dto.response.event.ScheduleByUserResponse;
 import com.toy.plany.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @Controller
 @RequestMapping("schedule")
 public class ScheduleController {
@@ -20,15 +21,15 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-    @GetMapping
-    public ResponseEntity<ScheduleResponse> readSchedule(@RequestParam Long scheduleId){
-        ScheduleResponse res = scheduleService.readSchedule(scheduleId);
+    @GetMapping("/list")
+    public ResponseEntity<ScheduleByUserResponse> readScheduleList(@RequestParam Long userId) {
+        ScheduleByUserResponse res = scheduleService.readScheduleListByUser(userId);
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<UserScheduleResponse> readScheduleList(@RequestParam Long userId){
-        UserScheduleResponse res = scheduleService.readScheduleListByUser(userId);
+    @GetMapping("/list/user-list")
+    public ResponseEntity<List<ScheduleByUserResponse>> readScheduleListByUserList(@RequestParam(value = "userIdList") List<Long> userIdList) {
+        List<ScheduleByUserResponse> res = scheduleService.readScheduleListByUserList(userIdList);
         return ResponseEntity.ok(res);
     }
 }

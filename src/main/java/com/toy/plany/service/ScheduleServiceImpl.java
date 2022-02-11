@@ -1,16 +1,18 @@
 package com.toy.plany.service;
 
+import com.toy.plany.dto.dtos.FilteredEventDto;
+import com.toy.plany.dto.response.event.EventInfoResponse;
 import com.toy.plany.dto.response.event.EventResponse;
-import com.toy.plany.dto.response.event.EventUserResponse;
-import com.toy.plany.dto.response.event.ScheduleResponse;
-import com.toy.plany.dto.response.event.UserScheduleResponse;
+import com.toy.plany.dto.response.event.AttendantResponse;
+import com.toy.plany.dto.response.event.ScheduleByUserResponse;
 import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
-import com.toy.plany.exception.exceptions.ScheduleNotFoundException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
+import com.toy.plany.repository.EventRepo;
 import com.toy.plany.repository.ScheduleRepo;
 import com.toy.plany.repository.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,27 +24,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private UserRepo userRepo;
     private ScheduleRepo scheduleRepo;
+    private EventRepo eventRepo;
 
-    public ScheduleServiceImpl(ScheduleRepo scheduleRepo, UserRepo userRepo) {
+    @Autowired
+    public ScheduleServiceImpl(ScheduleRepo scheduleRepo, UserRepo userRepo, EventRepo eventRepo) {
         this.scheduleRepo = scheduleRepo;
         this.userRepo = userRepo;
+        this.eventRepo = eventRepo;
     }
 
     @Override
-    public ScheduleResponse readSchedule(Long scheduleId) {
-        Schedule schedule = findScheduleById(scheduleId);
-        return createScheduleDto(schedule);
-    }
-
-    private Schedule findScheduleById(Long scheduleId) {
-        return scheduleRepo.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
-    }
-
-    @Override
-    public UserScheduleResponse readScheduleListByUser(Long userId) {
+    public ScheduleByUserResponse readScheduleListByUser(Long userId) {
         User user = findUserById(userId);
-        List<Schedule> scheduleList = getScheduleListByUser(user);
-        return createUserScheduleDto(user, scheduleList);
+        List<EventInfoResponse> eventInfoResponseList = getEventInfoResponseList(userId);
+
+        return ScheduleByUserResponse.from(user, eventInfoResponseList);
     }
 
     private List<Schedule> getScheduleListByUser(User user) {
@@ -53,58 +49,40 @@ public class ScheduleServiceImpl implements ScheduleService {
         return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
+    @Override
+    public List<ScheduleByUserResponse> readScheduleListByUserList(List<Long> userIdList) {
+        List<ScheduleByUserResponse> res = new ArrayList<>();
+        for(Long id : userIdList){
+            res.add(readScheduleListByUser(id));
+        }
+        return res;
+    }
+
+    private List<User> getUserList(List<Long> userIdList) {
+        return userRepo.findUserByIdList(userIdList);
+    }
+
+    private List<Schedule> getScheduleListByUserList(List<User> userList) {
+        return scheduleRepo.findScheduleByUserList(userList);
+    }
 
     @Override
-    public List<UserScheduleResponse> readScheduleListByUserList(List<Long> userIdList) {
+    public Boolean deleteSchedule(Long userId, Long scheduleId) {
         return null;
     }
 
-    private UserScheduleResponse createUserScheduleDto(User user, List<Schedule> scheduleList) {
-        return UserScheduleResponse.builder()
-                .userId(user.getId())
-                .name(user.getName())
-                .scheduleResponseList(scheduleList.stream().map(schedule -> createScheduleDto(schedule)).collect(Collectors.toList()))
-                .build();
+    private List<EventInfoResponse> getEventInfoResponseList(Long userId) {
+        List<Long> eventIds = scheduleRepo.findEventIdListByUser(userId);
+        System.out.println(eventIds);
+        return eventRepo.getEventInfo(eventIds).stream().map(it -> EventInfoResponse.from(it)).collect(Collectors.toList());
     }
 
-    private ScheduleResponse createScheduleDto(Schedule schedule) {
-        EventResponse eventResponse = createEventDto(schedule.getEvent());
-        return ScheduleResponse.builder()
-                .scheduleId(schedule.getId())
-                .event(eventResponse)
-                .build();
-    }
-
-    private EventResponse createEventDto(Event event) {
-        return EventResponse.builder()
-                .eventId(event.getId())
-                .title(event.getTitle())
-                .description(event.getDescription())
-                .organizer(createEventUserDto(event.getOrganizer()))
-                .attendances(createAttendantsList(event.getScheduleList()))
-                .startTime(event.getStartTime())
-                .endTime(event.getEndTime())
-                .build();
-    }
-
-    private List<EventUserResponse> createAttendantsList(List<Schedule> scheduleList) {
-        List<EventUserResponse> attendantsList = new ArrayList<>();
+    private List<AttendantResponse> createAttendantsList(List<Schedule> scheduleList) {
+        List<AttendantResponse> attendantsList = new ArrayList<>();
         for (Schedule schedule : scheduleList) {
             User user = schedule.getUser();
-            attendantsList.add(createEventUserDto(user));
+            attendantsList.add(AttendantResponse.from(user));
         }
         return attendantsList;
-    }
-
-    private EventUserResponse createEventUserDto(User user) {
-        return EventUserResponse.builder()
-                .id(user.getId())
-                .employeeNum(user.getEmployeeNum())
-                .name(user.getName())
-                .color(user.getColor().getCode())
-                .fontColor(user.getColor().getFontColor().getCode())
-                .department(user.getDepartment().getName())
-                .position(user.getPosition())
-                .build();
     }
 }

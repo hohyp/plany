@@ -1,5 +1,6 @@
 package com.toy.plany.dto.response.admin;
 
+import com.toy.plany.entity.User;
 import com.toy.plany.entity.enums.Color;
 import com.toy.plany.entity.enums.FontColor;
 import com.toy.plany.entity.enums.UserPosition;
@@ -49,5 +50,19 @@ public class UserResponse {
         this.color = color;
         this.fontColor = fontColor;
         this.position = position;
+    }
+
+    static public UserResponse from(User user){
+        return UserResponse.builder()
+                .id(user.getId())
+                .employeeNum(user.getEmployeeNum())
+                .name(user.getName())
+                .color(user.getColor().getCode())
+                .fontColor(user.getColor().getFontColor().getCode())
+                .department(user.getDepartment().getName())
+                .position(user.getPosition())
+                .slackUid(user.getSlackUid())
+                .email(user.getEmail())
+                .build();
     }
 }

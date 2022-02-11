@@ -1,14 +1,13 @@
 package com.toy.plany.service;
 
-import com.toy.plany.dto.response.event.ScheduleResponse;
-import com.toy.plany.dto.response.event.UserScheduleResponse;
+import com.toy.plany.dto.response.event.ScheduleByUserResponse;
 
 import java.util.List;
 
 public interface ScheduleService {
-    ScheduleResponse readSchedule(Long scheduleId);
+    ScheduleByUserResponse readScheduleListByUser(Long userId);
 
-    UserScheduleResponse readScheduleListByUser(Long userId);
+    List<ScheduleByUserResponse> readScheduleListByUserList(List<Long> userIdList);
 
-    List<UserScheduleResponse> readScheduleListByUserList(List<Long> userIdList);
+    Boolean deleteSchedule(Long userId, Long scheduleId);
 }
