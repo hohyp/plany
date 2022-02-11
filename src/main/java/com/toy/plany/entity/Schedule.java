@@ -27,9 +27,15 @@ public class Schedule {
     private User user;
 
     @Builder
-    public Schedule(Long id, Event event, User user) {
-        this.id = id;
+    public Schedule(Event event, User user) {
         this.event = event;
         this.user = user;
+    }
+
+    static public Schedule from(Event event, User user){
+        return Schedule.builder()
+                .event(event)
+                .user(user)
+                .build();
     }
 }

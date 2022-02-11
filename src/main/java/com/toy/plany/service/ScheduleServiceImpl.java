@@ -1,11 +1,8 @@
 package com.toy.plany.service;
 
-import com.toy.plany.dto.dtos.FilteredEventDto;
 import com.toy.plany.dto.response.event.EventInfoResponse;
-import com.toy.plany.dto.response.event.EventResponse;
 import com.toy.plany.dto.response.event.AttendantResponse;
 import com.toy.plany.dto.response.event.ScheduleByUserResponse;
-import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
@@ -56,14 +53,6 @@ public class ScheduleServiceImpl implements ScheduleService {
             res.add(readScheduleListByUser(id));
         }
         return res;
-    }
-
-    private List<User> getUserList(List<Long> userIdList) {
-        return userRepo.findUserByIdList(userIdList);
-    }
-
-    private List<Schedule> getScheduleListByUserList(List<User> userList) {
-        return scheduleRepo.findScheduleByUserList(userList);
     }
 
     @Override
