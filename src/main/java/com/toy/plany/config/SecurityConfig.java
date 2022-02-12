@@ -1,91 +1,85 @@
-//package com.toy.plany.config;
-//
-//import com.toy.plany.service.AdminService;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.builders.WebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-//
-//
-//@RequiredArgsConstructor
-//@EnableWebSecurity
-//@Configuration
-//public class SecurityConfig extends WebSecurityConfigurerAdapter {
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//
-//        http
-//        .authorizeRequests()
-//        .antMatchers("/**").permitAll().anyRequest().permitAll();
-//
-////        http.authorizeRequests()
-////                .antMatchers("/admin/**").hasRole("ADMIN")
-////                .antMatchers("/**").permitAll();
-////
-////        http
-////                .csrf().disable()
-////                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
-////                .and()
-////                .authorizeRequests()
-////                .antMatchers("/user/login").permitAll()
-////                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-////                .antMatchers("/user").hasAuthority("USER")
-////                .antMatchers("/admin").hasAuthority("ADMIN")
-////                .anyRequest().authenticated()
-////                .and()
-//////               .formLogin()
-//////                    .and()
-////                .logout()
-//        ;
-//
-//        /**
-//         * anyMatchers를 통해 경로 설정과 권한 설정이 가능합니다.
-//         * permitAll() : 누구나 접근이 가능
-//         * hasRole() : 특정 권한이 있는 사람만 접근 가능
-//         * authenticated() : 권한이 있으면 무조건 접근 가능
-//         * anyRequest는 anyMatchers에서 설정하지 않은 나머지 경로를 의미합니다.
-//         */
-////        http
-////                .authorizeRequests()
-////                .antMatchers("/login").permitAll() // 누구나 접근 허용
-////                .antMatchers("/").hasRole("USER") // USER, ADMIN만 접근 가능
-////                .antMatchers("/admin").hasRole("ADMIN") // ADMIN만 접근 가능
-////                .anyRequest().authenticated() // 나머지 요청들은 권한의 종류에 상관 없이 권한이 있어야 접근 가능
-////                .and()
-////                .formLogin()
-////                .loginPage("/login") // 로그인 페이지 링크
-////                .defaultSuccessUrl("/") // 로그인 성공 후 리다이렉트 주소
-////                .and()
-////                .logout()
-////                .logoutSuccessUrl("/login") // 로그아웃 성공시 리다이렉트 주소
-////                .invalidateHttpSession(true) // 세션 날리기
-////        ;
-//    }
-////
-////    @Override
-////    public void configure(AuthenticationManagerBuilder auth) throws Exception { // 9
-////        auth.userDetailsService(Service)
-////                // 해당 서비스(userService)에서는 UserDetailsService를 implements해서
-////                // loadUserByUsername() 구현해야함 (서비스 참고)
-////                .passwordEncoder(new BCryptPasswordEncoder());
-////    }
-//
-////    @Override
-////    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-////        auth.userDetailsService(userService)
-////                .passwordEncoder(userService.passwordEncoder());
-////    }
-//
-////    @Bean
-////    @Override
-////    public AuthenticationManager authenticationManagerBean() throws Exception {
-////        return super.authenticationManagerBean();
-////    }
-////
-////    @Bean
-////    public HttpSessionStrategy httpSessionStrategy() {
-////        return new HeaderHttpSessionStrategy();
-////    }
-//}
+package com.toy.plany.config;
+
+import com.toy.plany.jwt.JwtAccessDeniedHandler;
+import com.toy.plany.jwt.JwtAuthenticationEntryPoint;
+import com.toy.plany.jwt.JwtSecurityConfig;
+import com.toy.plany.jwt.TokenProvider;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
+
+
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final TokenProvider tokenProvider;
+    private final CorsFilter corsFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    public SecurityConfig(TokenProvider tokenProvider, CorsFilter corsFilter, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler) {
+        this.tokenProvider = tokenProvider;
+        this.corsFilter = corsFilter;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring().antMatchers("/static/css/**, /static/js/**, *.ico");
+        web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui/index.html", "/webjars/**", "/swagger/**", "/swagger-ui/index.html");
+    }
+
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+
+        httpSecurity
+                // token을 사용하는 방식이기 때문에 csrf를 disable합니다.
+                .csrf().disable()
+
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+
+
+                // 세션을 사용하지 않기 때문에 STATELESS로 설정
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                .and()
+                .authorizeRequests()
+                .antMatchers("/auth/**").permitAll()
+                .antMatchers("/user/**").permitAll()
+                .antMatchers("/admin/**").permitAll()
+                .antMatchers("/schedule/**").permitAll()
+                .antMatchers("/event/**").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/swagger-ui/index.html").permitAll()
+
+
+                .anyRequest().authenticated()
+
+                .and()
+                .apply(new JwtSecurityConfig(tokenProvider));
+    }
+}

@@ -7,6 +7,7 @@ import com.toy.plany.entity.User;
 import com.toy.plany.exception.exceptions.IncorrectPasswordException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
 import com.toy.plany.repository.UserRepo;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +18,11 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepo userRepo) {
+    public UserServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse updatePassword(Long userId, UpdatePasswordRequest request) {
         User user = findUserById(userId);
-        user.updatePassword(request.getPassword());
+        user.updatePassword(passwordEncoder.encode(request.getPassword()));
         return UserResponse.from(user);
     }
 

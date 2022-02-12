@@ -6,5 +6,7 @@ import com.toy.plany.dto.response.event.EventResponse;
 public interface EventService {
     EventResponse createEvent(Long userId, EventCreateRequest request);
 
+
+
     Boolean deleteEvent(Long userId, Long eventId);
 }

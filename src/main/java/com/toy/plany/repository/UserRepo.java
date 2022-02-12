@@ -1,6 +1,7 @@
 package com.toy.plany.repository;
 
 import com.toy.plany.entity.User;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
+    @EntityGraph(attributePaths = "authorities")
     Optional<User> findUserByEmployeeNum(String employeeNum);
 
     List<User> findUserByDepartmentId(Long departmentId);

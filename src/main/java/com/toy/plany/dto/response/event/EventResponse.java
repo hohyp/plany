@@ -26,6 +26,12 @@ public class EventResponse {
     private String description;
 
     //TODO date, startTime, endTime 분리
+//
+//    private String date;
+//
+//    private String startTime;
+//
+//    private String endTime;
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")

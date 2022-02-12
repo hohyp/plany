@@ -1,5 +1,6 @@
 package com.toy.plany.dto.response.admin;
 
+import com.toy.plany.dto.dtos.AuthorityDto;
 import com.toy.plany.entity.User;
 import com.toy.plany.entity.enums.Color;
 import com.toy.plany.entity.enums.FontColor;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -39,8 +42,10 @@ public class UserResponse {
 
     private String position;
 
+    private Set<AuthorityDto> authorityDtoSet;
+
     @Builder
-    public UserResponse(Long id, String employeeNum, String slackUid, String name, String email, String department, String color, String fontColor, String position) {
+    public UserResponse(Long id, String employeeNum, String slackUid, String name, String email, String department, String color, String fontColor, String position, Set<AuthorityDto> authorityDtoSet) {
         this.id = id;
         this.employeeNum = employeeNum;
         this.slackUid = slackUid;
@@ -50,9 +55,13 @@ public class UserResponse {
         this.color = color;
         this.fontColor = fontColor;
         this.position = position;
+        this.authorityDtoSet = authorityDtoSet;
     }
 
-    static public UserResponse from(User user){
+    static public UserResponse from(User user) {
+        if (user == null)
+            return null;
+
         return UserResponse.builder()
                 .id(user.getId())
                 .employeeNum(user.getEmployeeNum())
@@ -63,6 +72,9 @@ public class UserResponse {
                 .position(user.getPosition())
                 .slackUid(user.getSlackUid())
                 .email(user.getEmail())
+                .authorityDtoSet(user.getAuthorities().stream()
+                        .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
+                        .collect(Collectors.toSet()))
                 .build();
     }
 }
