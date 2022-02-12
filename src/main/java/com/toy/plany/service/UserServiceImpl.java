@@ -1,8 +1,10 @@
 package com.toy.plany.service;
 
+import com.toy.plany.dto.dtos.TokenDto;
 import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.request.user.UpdatePasswordRequest;
 import com.toy.plany.dto.response.admin.UserResponse;
+import com.toy.plany.dto.response.auth.LoginResponse;
 import com.toy.plany.entity.User;
 import com.toy.plany.exception.exceptions.IncorrectPasswordException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
@@ -26,10 +28,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request, TokenDto tokenDto) {
         User user = findUserByEmployeeNumber(request.getEmployeeNumber());
-        if(user.getPassword().equals(request.getPassword()))
-            return UserResponse.from(user);
+        System.out.println(user.getPassword());
+        System.out.println(passwordEncoder.encode("123456"));
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword()))
+            return LoginResponse.of(user, tokenDto);
         else
             throw new IncorrectPasswordException();
     }
@@ -48,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional(readOnly = true)
-    private User findUserById(Long userId){
+    private User findUserById(Long userId) {
         return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 

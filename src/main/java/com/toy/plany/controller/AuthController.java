@@ -2,8 +2,13 @@ package com.toy.plany.controller;
 
 import com.toy.plany.dto.dtos.TokenDto;
 import com.toy.plany.dto.request.user.LoginRequest;
+import com.toy.plany.dto.response.auth.LoginResponse;
+import com.toy.plany.entity.User;
 import com.toy.plany.jwt.JwtFilter;
 import com.toy.plany.jwt.TokenProvider;
+import com.toy.plany.repository.UserRepo;
+import com.toy.plany.service.UserService;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +28,16 @@ import javax.validation.Valid;
 public class AuthController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final UserService userService;
 
-    public AuthController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserService userService) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> authorize(@Valid @RequestBody LoginRequest request) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getEmployeeNumber(), request.getPassword());
@@ -43,6 +50,8 @@ public class AuthController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-        return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+        TokenDto tokenDto = new TokenDto(jwt);
+        LoginResponse loginResponse = userService.login(request, tokenDto);
+        return new ResponseEntity<>(loginResponse, httpHeaders, HttpStatus.OK);
     }
 }

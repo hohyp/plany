@@ -1,13 +1,15 @@
 package com.toy.plany.service;
 
+import com.toy.plany.dto.dtos.TokenDto;
 import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.request.user.UpdatePasswordRequest;
 import com.toy.plany.dto.response.admin.UserResponse;
+import com.toy.plany.dto.response.auth.LoginResponse;
 
 import java.util.List;
 
 public interface UserService {
-    UserResponse login(LoginRequest request);
+    LoginResponse login(LoginRequest request, TokenDto tokenDto);
 
     UserResponse insertSlackUid(Long userId, String slackUid);
 
