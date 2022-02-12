@@ -6,6 +6,7 @@ import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.service.AdminService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ public class AdminController {
     }
 
     @PostMapping("/user")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @ApiOperation(value = "유저 생성", notes = "받은 유저 정보를 기반으로 유저를 생성한다")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request) {
         UserResponse res = adminService.createUser(request);
@@ -38,6 +40,7 @@ public class AdminController {
     }
 
     @GetMapping("/user")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @ApiOperation(value = "유저 조회", notes = "사원번호를 통해 한명의 유저를 조회한다")
     public ResponseEntity<UserResponse> readUser(@RequestParam String employeeNumber) {
         UserResponse res = adminService.readUserByEmployeeNumber(employeeNumber);
@@ -45,6 +48,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/user")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @ApiOperation(value = "유저 삭제", notes = "유저 id를 통해 유저를 삭제한다")
     public ResponseEntity<Boolean> deleteUser(@RequestParam Long userId) {
         Boolean res = adminService.deleteUser(userId);
@@ -53,6 +57,7 @@ public class AdminController {
 
 
     @PostMapping("/department")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @ApiOperation(value = "부서 생성", notes = "부서 이름을 통해 부서를 생성한다")
     public ResponseEntity<DepartmentResponse> createDepartment(@RequestParam String name) {
         DepartmentResponse res = adminService.createDepartment(name);
@@ -69,6 +74,7 @@ public class AdminController {
 
 
     @DeleteMapping("/department")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @ApiOperation(value = "부서 삭제", notes = "부서 id를 통해 부서를 삭제한다")
     public ResponseEntity<Boolean> deleteDepartment(@RequestParam Long departmentId) {
         adminService.deleteDepartment(departmentId);
