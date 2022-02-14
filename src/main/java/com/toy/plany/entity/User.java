@@ -33,8 +33,6 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    private String email;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DEPARTMENT_ID")
     private Department department;
@@ -43,25 +41,22 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Color color;
 
-    private String position;
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_authority",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+
     private Set<Authority> authorities;
 
     @Builder
-    public User(String employeeNum, String password, String slackUid, String name, String email, Department department, Color color, String position, Set<Authority> authorities) {
+    public User(String employeeNum, String password, String slackUid, String name, Department department, Color color, Set<Authority> authorities) {
         this.employeeNum = employeeNum;
         this.password = password;
         this.slackUid = slackUid;
         this.name = name;
-        this.email = email;
         this.department = department;
         this.color = color;
-        this.position = position;
         this.authorities = authorities;
     }
 

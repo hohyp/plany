@@ -48,11 +48,9 @@ public class AdminServiceImpl implements AdminService {
         User user = User.builder()
                 .employeeNum(request.getEmployeeNum())
                 .password(passwordEncoder.encode(User.DEFAULT_PASSWORD))
-                .email(request.getEmail())
                 .name(request.getName())
                 .department(department)
                 .color(color)
-                .position(request.getPosition())
                 .authorities(Collections.singleton(authority))
                 .build();
         User savedUser = userRepo.save(user);

@@ -59,8 +59,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .organizer(organizer)
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
+
                 .status(EventStatus.CREATED)
                 .build();
         Event savedEvent = saveEvent(event);

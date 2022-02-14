@@ -22,7 +22,7 @@
 //    @Autowired
 //    private Job reminderJob;
 //
-////    @Scheduled(cron = "* 25,55 * * * *", zone = "Asia/Seoul")
+//    @Scheduled(cron = "* 25,55 * * * *", zone = "Asia/Seoul")
 //    public void jobSchedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException,
 //            JobRestartException, JobInstanceAlreadyCompleteException {
 //

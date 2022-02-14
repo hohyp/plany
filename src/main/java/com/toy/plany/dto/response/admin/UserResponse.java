@@ -42,10 +42,8 @@ public class UserResponse {
 
     private String position;
 
-    private Set<AuthorityDto> authorityDtoSet;
-
     @Builder
-    public UserResponse(Long id, String employeeNum, String slackUid, String name, String email, String department, String color, String fontColor, String position, Set<AuthorityDto> authorityDtoSet) {
+    public UserResponse(Long id, String employeeNum, String slackUid, String name, String email, String department, String color, String fontColor, String position) {
         this.id = id;
         this.employeeNum = employeeNum;
         this.slackUid = slackUid;
@@ -55,7 +53,6 @@ public class UserResponse {
         this.color = color;
         this.fontColor = fontColor;
         this.position = position;
-        this.authorityDtoSet = authorityDtoSet;
     }
 
     static public UserResponse from(User user) {
@@ -69,12 +66,7 @@ public class UserResponse {
                 .color(user.getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
-                .position(user.getPosition())
                 .slackUid(user.getSlackUid())
-                .email(user.getEmail())
-                .authorityDtoSet(user.getAuthorities().stream()
-                        .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
-                        .collect(Collectors.toSet()))
                 .build();
     }
 }

@@ -5,11 +5,12 @@ import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.request.user.UpdatePasswordRequest;
 import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.dto.response.auth.LoginResponse;
+import com.toy.plany.entity.User;
 
 import java.util.List;
 
 public interface UserService {
-    LoginResponse login(LoginRequest request, TokenDto tokenDto);
+    LoginResponse login(LoginRequest request);
 
     UserResponse insertSlackUid(Long userId, String slackUid);
 
@@ -18,4 +19,6 @@ public interface UserService {
     List<UserResponse> readMyDepartmentUser(Long departmentId);
 
     List<UserResponse> readAutoCompleteUserList(String keyword);
+
+    Long findUserIdByEmployeeNumber(String employeeNum);
 }

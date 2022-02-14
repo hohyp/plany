@@ -51,7 +51,6 @@ public class AttendantResponse {
                 .color(user.getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
-                .position(user.getPosition())
                 .build();
     }
 }

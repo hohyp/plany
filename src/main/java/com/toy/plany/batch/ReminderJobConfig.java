@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.persistence.EntityManagerFactory;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Configuration
 @EnableBatchProcessing
@@ -62,6 +64,9 @@ public class ReminderJobConfig {
     @Bean
     @StepScope
     public JpaPagingItemReader<Schedule> reader() {
+        LocalDate date = LocalDate.now();
+        LocalDateTime dateTime = LocalDateTime.now();
+
         return new JpaPagingItemReaderBuilder<Schedule>()
                 .queryString("SELECT s FROM Schedule s")
                 .pageSize(chunkSize)

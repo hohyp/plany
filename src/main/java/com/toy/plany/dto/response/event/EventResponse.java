@@ -29,6 +29,8 @@ public class EventResponse {
 //
 //    private String date;
 //
+//    private Integer day;
+//
 //    private String startTime;
 //
 //    private String endTime;

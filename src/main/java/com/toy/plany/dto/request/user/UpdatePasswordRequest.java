@@ -5,15 +5,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
 public class UpdatePasswordRequest {
     @NotBlank
-    private String password;
+    @NotNull
+    private String currentPassword;
+
+    @NotBlank
+    @NotNull
+    private String newPassword;
+
+    @NotBlank
+    @NotNull
+    private String validatedPassword;
 
     @Builder
-    public UpdatePasswordRequest(String password) {
-        this.password = password;
+    public UpdatePasswordRequest(String currentPassword, String newPassword, String validatedPassword) {
+        this.currentPassword = currentPassword;
+        this.newPassword = newPassword;
+        this.validatedPassword = validatedPassword;
     }
 }

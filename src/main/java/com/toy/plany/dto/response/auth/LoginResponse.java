@@ -60,6 +60,24 @@ public class LoginResponse {
         this.tokenDto = tokenDto;
     }
 
+    static public LoginResponse from(User user) {
+        if (user == null)
+            return null;
+
+        return LoginResponse.builder()
+                .id(user.getId())
+                .employeeNum(user.getEmployeeNum())
+                .name(user.getName())
+                .color(user.getColor().getCode())
+                .fontColor(user.getColor().getFontColor().getCode())
+                .department(user.getDepartment().getName())
+                .slackUid(user.getSlackUid())
+                .authorityDtoSet(user.getAuthorities().stream()
+                        .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
+                        .collect(Collectors.toSet()))
+                .build();
+    }
+
     static public LoginResponse of(User user, TokenDto tokenDto) {
         if (user == null)
             return null;
@@ -71,13 +89,16 @@ public class LoginResponse {
                 .color(user.getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
-                .position(user.getPosition())
                 .slackUid(user.getSlackUid())
-                .email(user.getEmail())
                 .authorityDtoSet(user.getAuthorities().stream()
                         .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
                         .collect(Collectors.toSet()))
                 .tokenDto(tokenDto)
                 .build();
+    }
+
+    public LoginResponse addToken(TokenDto tokenDto){
+        this.tokenDto = tokenDto;
+        return this;
     }
 }

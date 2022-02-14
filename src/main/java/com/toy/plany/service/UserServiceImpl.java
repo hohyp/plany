@@ -7,6 +7,7 @@ import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.dto.response.auth.LoginResponse;
 import com.toy.plany.entity.User;
 import com.toy.plany.exception.exceptions.IncorrectPasswordException;
+import com.toy.plany.exception.exceptions.InvalidPasswordException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
 import com.toy.plany.repository.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,10 +29,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LoginResponse login(LoginRequest request, TokenDto tokenDto) {
+    public LoginResponse login(LoginRequest request) {
         User user = findUserByEmployeeNumber(request.getEmployeeNumber());
-        if (passwordEncoder.matches(request.getPassword(), user.getPassword()))
-            return LoginResponse.of(user, tokenDto);
+        String password = passwordEncoder.encode(request.getPassword());
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return LoginResponse.from(user);
+        }
         else
             throw new IncorrectPasswordException();
     }
@@ -44,8 +47,15 @@ public class UserServiceImpl implements UserService {
         return UserResponse.from(user);
     }
 
+
     @Transactional(readOnly = true)
-    private User findUserByEmployeeNumber(String employeeNumber) {
+    public Long findUserIdByEmployeeNumber(String employeeNumber) {
+        User user = findUserByEmployeeNumber(employeeNumber);
+        return user.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public User findUserByEmployeeNumber(String employeeNumber) {
         return userRepo.findUserByEmployeeNum(employeeNumber).orElseThrow(UserNotFoundException::new);
     }
 
@@ -57,9 +67,17 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse updatePassword(Long userId, UpdatePasswordRequest request) {
-        //TODO 검증 로직 추가하기
+
         User user = findUserById(userId);
-        user.updatePassword(passwordEncoder.encode(request.getPassword()));
+        String currentPassword = passwordEncoder.encode(request.getCurrentPassword());
+        String newPassword = passwordEncoder.encode(request.getNewPassword());
+        String validatedPassword = passwordEncoder.encode(request.getValidatedPassword());
+
+        if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword()))
+            throw new InvalidPasswordException("현재 비밀번호가 일치하지 않습니다.");
+        else if(!request.getNewPassword().equals(request.getValidatedPassword())){
+            throw new InvalidPasswordException("새 비밀번호와 검증 비밀번호가 일치하지 않습니다");}
+        user.updatePassword(newPassword);
         return UserResponse.from(user);
     }
 

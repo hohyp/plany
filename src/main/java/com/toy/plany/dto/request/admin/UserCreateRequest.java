@@ -17,21 +17,14 @@ public class UserCreateRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
-    private String email;
-
     @NotNull
     private Long departmentId;
 
-    @NotNull
-    private String position;
 
     @Builder
-    public UserCreateRequest(String employeeNum, String name, String email, Long departmentId, String position) {
+    public UserCreateRequest(String employeeNum, String name, Long departmentId) {
         this.employeeNum = employeeNum;
         this.name = name;
-        this.email = email;
         this.departmentId = departmentId;
-        this.position = position;
     }
 }

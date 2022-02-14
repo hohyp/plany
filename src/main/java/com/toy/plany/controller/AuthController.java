@@ -3,13 +3,11 @@ package com.toy.plany.controller;
 import com.toy.plany.dto.dtos.TokenDto;
 import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.response.auth.LoginResponse;
-import com.toy.plany.entity.User;
 import com.toy.plany.jwt.JwtFilter;
 import com.toy.plany.jwt.TokenProvider;
-import com.toy.plany.repository.UserRepo;
 import com.toy.plany.service.UserService;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.java.Log;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +49,8 @@ public class AuthController {
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
         TokenDto tokenDto = new TokenDto(jwt);
-        LoginResponse loginResponse = userService.login(request, tokenDto);
+        LoginResponse loginResponse = userService.login(request);
+        loginResponse = loginResponse.addToken(tokenDto);
         return new ResponseEntity<>(loginResponse, httpHeaders, HttpStatus.OK);
     }
 }

@@ -66,6 +66,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public Boolean deleteSchedule(Long userId, Long scheduleId) {
+        //TODO 삭제하고 이벤트 검색할때 참석자 제대로 빠진채로 리턴하는지 확인하기
         User user = getUserById(userId);
         Schedule schedule = getScheduleById(scheduleId);
         if (schedule.validateOwner(user))
