@@ -38,4 +38,8 @@ public class Schedule {
                 .user(user)
                 .build();
     }
+
+    public boolean validateOwner(User user){
+        return user == this.user;
+    }
 }

@@ -5,12 +5,16 @@ import com.toy.plany.dto.response.event.AttendantResponse;
 import com.toy.plany.dto.response.event.ScheduleByUserResponse;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
+import com.toy.plany.exception.exceptions.DeleteFailException;
+import com.toy.plany.exception.exceptions.InvalidScheduleOwner;
+import com.toy.plany.exception.exceptions.ScheduleNotFoundException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
 import com.toy.plany.repository.EventRepo;
 import com.toy.plany.repository.ScheduleRepo;
 import com.toy.plany.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,24 +36,29 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public ScheduleByUserResponse readScheduleListByUser(Long userId) {
-        User user = findUserById(userId);
+        User user = getUserById(userId);
         List<EventInfoResponse> eventInfoResponseList = getEventInfoResponseList(userId);
 
         return ScheduleByUserResponse.from(user, eventInfoResponseList);
     }
 
-    private List<Schedule> getScheduleListByUser(User user) {
+    @Transactional
+    protected List<Schedule> getScheduleListByUser(User user) {
         return scheduleRepo.findScheduleByUser(user);
     }
 
-    private User findUserById(Long userId) {
+    protected Schedule getScheduleById(Long scheduleId) {
+        return scheduleRepo.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
+    }
+
+    private User getUserById(Long userId) {
         return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public List<ScheduleByUserResponse> readScheduleListByUserList(List<Long> userIdList) {
         List<ScheduleByUserResponse> res = new ArrayList<>();
-        for(Long id : userIdList){
+        for (Long id : userIdList) {
             res.add(readScheduleListByUser(id));
         }
         return res;
@@ -57,9 +66,25 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public Boolean deleteSchedule(Long userId, Long scheduleId) {
+        User user = getUserById(userId);
+        Schedule schedule = getScheduleById(scheduleId);
+        if (schedule.validateOwner(user))
+            deleteScheduleFromRepo(schedule);
+        else
+            throw new InvalidScheduleOwner("유저 " + userId + "의 스케줄이 아닌 스케줄은 삭제할 수 없습니다");
         return null;
     }
 
+    @Transactional
+    protected void deleteScheduleFromRepo(Schedule schedule) {
+        try {
+            scheduleRepo.delete(schedule);
+        } catch (Exception e) {
+            throw new DeleteFailException();
+        }
+    }
+
+    @Transactional
     private List<EventInfoResponse> getEventInfoResponseList(Long userId) {
         List<Long> eventIds = scheduleRepo.findEventIdListByUser(userId);
         System.out.println(eventIds);

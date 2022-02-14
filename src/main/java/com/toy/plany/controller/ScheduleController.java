@@ -6,10 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +33,13 @@ public class ScheduleController {
     @ApiOperation(value = "여러 유저의 스케줄 조회", notes = "user id list를 기반으로 여러명의 스케줄 목록을 조회한다")
     public ResponseEntity<List<ScheduleByUserResponse>> readScheduleListByUserList(@RequestParam(value = "userIdList") List<Long> userIdList) {
         List<ScheduleByUserResponse> res = scheduleService.readScheduleListByUserList(userIdList);
+        return ResponseEntity.ok(res);
+    }
+
+    @DeleteMapping
+    @ApiOperation(value = "스케줄 삭제")
+    public ResponseEntity<Boolean> deleteSchedule(@RequestParam Long userId, @RequestParam Long scheduleId){
+        Boolean res = scheduleService.deleteSchedule(userId, scheduleId);
         return ResponseEntity.ok(res);
     }
 }

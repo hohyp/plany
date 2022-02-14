@@ -22,7 +22,8 @@ public enum ErrorCode {
     INVALID_ORGANIZER("E002", "Invalid Organizer"),
 
     //Schedule
-    SCHEDULE_NOT_FOUND("S1001", "Schedule Not Found"),
+    SCHEDULE_NOT_FOUND("S001", "Schedule Not Found"),
+    INVALIDATE_SCHEDULE_OWNER("S002","Invalid Schedule Owner"),
 
     //User
     USER_NOT_FOUND("U001", "User Not Found"),

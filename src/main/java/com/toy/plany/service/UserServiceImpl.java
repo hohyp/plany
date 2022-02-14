@@ -30,8 +30,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse login(LoginRequest request, TokenDto tokenDto) {
         User user = findUserByEmployeeNumber(request.getEmployeeNumber());
-        System.out.println(user.getPassword());
-        System.out.println(passwordEncoder.encode("123456"));
         if (passwordEncoder.matches(request.getPassword(), user.getPassword()))
             return LoginResponse.of(user, tokenDto);
         else
@@ -59,6 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse updatePassword(Long userId, UpdatePasswordRequest request) {
+        //TODO 검증 로직 추가하기
         User user = findUserById(userId);
         user.updatePassword(passwordEncoder.encode(request.getPassword()));
         return UserResponse.from(user);

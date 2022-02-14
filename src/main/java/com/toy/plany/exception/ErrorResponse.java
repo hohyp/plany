@@ -16,7 +16,16 @@ public class ErrorResponse {
         this.code = code.getCode();
     }
 
+    private ErrorResponse(final ErrorCode code, final String message) {
+        this.message = message;
+        this.code = code.getCode();
+    }
+
     public static ErrorResponse from(final ErrorCode code) {
         return new ErrorResponse(code);
+    }
+
+    public static ErrorResponse of(final ErrorCode code, final String message) {
+        return new ErrorResponse(code, message);
     }
 }

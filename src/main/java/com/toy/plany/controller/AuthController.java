@@ -8,6 +8,7 @@ import com.toy.plany.jwt.JwtFilter;
 import com.toy.plany.jwt.TokenProvider;
 import com.toy.plany.repository.UserRepo;
 import com.toy.plany.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,13 +17,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -37,6 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @ApiOperation(value = "로그인", notes = "로그인하면 유저 정보와 jwt 토큰을 반환한다")
     public ResponseEntity<LoginResponse> authorize(@Valid @RequestBody LoginRequest request) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
