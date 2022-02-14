@@ -5,7 +5,7 @@ import com.toy.plany.dto.response.event.EventResponse;
 import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
-import com.toy.plany.entity.enums.EventStatus;
+import com.toy.plany.entity.enums.AlarmStatus;
 import com.toy.plany.exception.exceptions.*;
 import com.toy.plany.repository.EventRepo;
 import com.toy.plany.repository.ScheduleRepo;
@@ -53,6 +53,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
      * @return
      */
     @Override
+    @Transactional
     public EventResponse createEvent(Long userId, EventCreateRequest request) {
         User organizer = findUserById(userId);
         LocalDateTime startTime = request.getDate().atTime(Integer.valueOf(request.getStartHour()), Integer.valueOf(request.getStartMinute()));
@@ -63,13 +64,18 @@ public class EventServiceImpl implements EventService, SendAlarmService {
                 .organizer(organizer)
                 .startTime(startTime)
                 .endTime(endTime)
-                .status(EventStatus.CREATED)
+                .status(AlarmStatus.CREATED)
                 .build();
         Event savedEvent = saveEvent(event);
         List<Schedule> scheduleList = createScheduleList(savedEvent, request.getAttendances());
         savedEvent.updateScheduleList(scheduleList);
-        sendAlarm(event);
         return EventResponse.from(savedEvent);
+    }
+
+    @Override
+    @Transactional
+    public EventResponse readEvent(Long eventId) {
+        return null;
     }
 
     @Transactional
@@ -85,6 +91,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         //TODO 스케줄 생성 전 가용시간 검증
     }
 
+    @Transactional
     private List<Schedule> createScheduleList(Event event, List<Long> attendancesList) {
         List<Schedule> scheduleList = new ArrayList<>();
         for (Long userId : attendancesList) {
@@ -101,6 +108,11 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         Schedule schedule = Schedule.builder()
                 .user(user)
                 .event(event)
+                .title(event.getTitle())
+                .status(AlarmStatus.CREATED)
+                .remindTime(event.getStartTime().minusMinutes(5))
+                .startTime(event.getStartTime())
+                .endTime(event.getEndTime())
                 .build();
         return saveSchedule(schedule);
     }
@@ -108,18 +120,28 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     @Transactional
     private Schedule saveSchedule(Schedule schedule) {
         try {
+            sendAlarm(schedule, schedule.getStatus());
             return scheduleRepo.save(schedule);
         } catch (Exception e) {
             throw new SaveFailException();
         }
     }
 
+
     @Override
-    public void sendAlarm(Event event) {
-        List<Schedule> scheduleList = event.getScheduleList();
-        for (Schedule schedule : scheduleList) {
-            sendSlackDM(schedule.getUser().getSlackUid(), event.getOrganizer().getName(), event.getTitle(), event.getStatus().getValue());
-        }
+    public void sendAlarm(Schedule schedule, AlarmStatus status) {
+        String message = createAlarmMessage(schedule.getUser().getSlackUid(), schedule.getTitle(), status.getValue(), schedule.getStartTime().toString());
+        sendSlackDM(message);
+    }
+
+    private String createAlarmMessage(String slackUid, String scheduleTitle, String reminderType, String from, String to){
+        String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " : " + scheduleTitle + "\"}";
+        return body;
+    }
+
+    private String createAlarmMessage(String slackUid, String scheduleTitle, String reminderType, String at){
+        String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " : " + scheduleTitle + "\"}";
+        return body;
     }
 
     @Transactional(readOnly = true)
@@ -128,16 +150,24 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     }
 
     @Override
+    @Transactional
     public Boolean deleteEvent(Long userId, Long eventId) {
         Event event = findEventById(eventId);
         User user = findUserById(userId);
         if (validateOrganizer(event.getOrganizer(), user)) {
-            event.updateStatus(EventStatus.CANCELED);
+            event.updateStatus(AlarmStatus.CANCELED);
             sendAlarm(event);
             deleteEventFromRepo(event);
             return true;
         } else
             throw new InvalidOrganizerException();
+    }
+
+    public void sendAlarm(Event event){
+        List<Schedule> attendants = event.getScheduleList();
+        for(Schedule s : attendants){
+            sendAlarm(s, AlarmStatus.CANCELED);
+        }
     }
 
     private void deleteEventFromRepo(Event event) {
@@ -159,7 +189,8 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         return eventRepo.findById(eventId).orElseThrow(EventNotFoundException::new);
     }
 
-    private void sendSlackDM(String slackUid, String organizerName, String scheduleTitle, String reminderType) {
+
+    private void sendSlackDM(String body) {
         try {
 
             HttpHeaders headers = new HttpHeaders();
@@ -167,7 +198,6 @@ public class EventServiceImpl implements EventService, SendAlarmService {
             headers.add("Content-type", "application/json; charset=utf-8");
 
             //TODO from, to 추가하기
-            String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " By " + organizerName + " : " + scheduleTitle + "\"}";
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 

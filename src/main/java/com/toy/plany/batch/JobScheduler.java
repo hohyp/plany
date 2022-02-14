@@ -10,6 +10,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +22,9 @@ public class JobScheduler {
     private JobLauncher jobLauncher;
 
     @Autowired
-    private Job reminderJob;
+    private ReminderJobConfig reminderJob;
 
-    @Scheduled(cron = "* 25,55 * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 25,55 * * * *", zone = "Asia/Seoul")
     public void jobSchedule() throws JobParametersInvalidException, JobExecutionAlreadyRunningException,
             JobRestartException, JobInstanceAlreadyCompleteException {
 
@@ -37,6 +39,6 @@ public class JobScheduler {
 
         JobParameters parameters = new JobParameters(jobParametersMap);
 
-        JobExecution jobExecution = jobLauncher.run(reminderJob, parameters);
+        JobExecution jobExecution = jobLauncher.run(reminderJob.reminderJob(), parameters);
     }
 }

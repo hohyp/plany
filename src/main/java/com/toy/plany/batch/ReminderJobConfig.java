@@ -4,6 +4,10 @@ package com.toy.plany.batch;
 import static com.toy.plany.entity.QSchedule.schedule;
 
 import com.toy.plany.entity.Schedule;
+import com.toy.plany.entity.enums.AlarmStatus;
+import com.toy.plany.service.EventService;
+import com.toy.plany.service.SendAlarmService;
+import org.apache.tomcat.jni.Local;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.*;
@@ -13,16 +17,22 @@ import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.batch.item.querydsl.reader.QuerydslNoOffsetPagingItemReader;
+import org.springframework.batch.item.querydsl.reader.QuerydslPagingItemReader;
 import org.springframework.batch.item.querydsl.reader.expression.Expression;
 import org.springframework.batch.item.querydsl.reader.options.QuerydslNoOffsetNumberOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.parameters.P;
 
 import javax.persistence.EntityManagerFactory;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableBatchProcessing
@@ -36,6 +46,9 @@ public class ReminderJobConfig {
 
     @Autowired
     public EntityManagerFactory entityManagerFactory;
+
+    @Autowired
+    public SendAlarmService sendAlarmService;
 
 
     private String readerJob = "REMINDER_JOB";
@@ -52,7 +65,6 @@ public class ReminderJobConfig {
     }
 
     @Bean
-    @JobScope
     public Step reminderStep() {
         return stepBuilderFactory.get(readerJobStep)
                 .startLimit(3)
@@ -65,32 +77,35 @@ public class ReminderJobConfig {
 
     @Bean
     @StepScope
-    public JpaPagingItemReader<Schedule> reader(@Value("#{jobParameters[date]}") String date) {
-//        LocalDateTime targetDate = LocalDateTime.f
+    public QuerydslPagingItemReader<Schedule> reader(@Value("#{jobParameters[date]}") String date) {
 
-        return new JpaPagingItemReaderBuilder<Schedule>()
-                .queryString("SELECT s FROM Schedule s WHERE ")
-                .pageSize(chunkSize)
-                .entityManagerFactory(entityManagerFactory)
-                .name("reminderPagingReader")
-                .build();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
+
+        // 1. No Offset Option
+        QuerydslNoOffsetNumberOptions<Schedule, Long> options =
+                new QuerydslNoOffsetNumberOptions<>(schedule.id, Expression.ASC);
+
+        // 2. Querydsl Reader
+        return new QuerydslNoOffsetPagingItemReader<>(entityManagerFactory, chunkSize, options, queryFactory -> queryFactory
+                .selectFrom(schedule)
+                .where(schedule.status.eq(AlarmStatus.CREATED)
+                        .and(schedule.remindTime.eq(dateTime))));
+
     }
+
 
     @Bean
     @StepScope
     public ItemProcessor<Schedule, Schedule> processor() {
-
-        return schedule -> {
-
-            //TODO slack api 메세지 보내기
-            System.out.println("실행됨");
-
-            return schedule;
+        return item -> {
+            sendAlarmService.sendAlarm(item, AlarmStatus.REMINDED);
+            item.updateStatus(AlarmStatus.REMINDED);
+            return item;
         };
     }
 
     @Bean
-    @StepScope
     public JpaItemWriter<Schedule> writer() {
         return new JpaItemWriterBuilder<Schedule>()
                 .entityManagerFactory(entityManagerFactory)

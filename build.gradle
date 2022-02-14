@@ -53,6 +53,9 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
+    compile 'com.github.jojoldu.spring-batch-querydsl:spring-batch-querydsl-reader:2.4.8'
+    implementation 'com.github.jojoldu.spring-batch-querydsl:spring-batch-querydsl-reader:2.4.8'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
 
 }
