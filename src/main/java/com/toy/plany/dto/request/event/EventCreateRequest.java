@@ -14,7 +14,6 @@ public class EventCreateRequest {
     private String title;
     private String description;
     private LocalDate date;
-    private Integer day;
     private String startHour;
     private String startMinute;
     private String endHour;
@@ -24,11 +23,10 @@ public class EventCreateRequest {
     private String location;
 
     @Builder
-    public EventCreateRequest(String title, String description, LocalDate date, Integer day, String startHour, String startMinute, String endHour, String endMinute, Long organizer, List<Long> attendances, String location) {
+    public EventCreateRequest(String title, String description, LocalDate date, String startHour, String startMinute, String endHour, String endMinute, Long organizer, List<Long> attendances, String location) {
         this.title = title;
         this.description = description;
         this.date = date;
-        this.day = day;
         this.startHour = startHour;
         this.startMinute = startMinute;
         this.endHour = endHour;

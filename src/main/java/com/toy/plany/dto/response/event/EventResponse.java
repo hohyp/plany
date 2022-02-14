@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,34 +26,26 @@ public class EventResponse {
 
     private String description;
 
-    //TODO date, startTime, endTime 분리
-//
-//    private String date;
-//
-//    private Integer day;
-//
-//    private String startTime;
-//
-//    private String endTime;
 
-    @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime startTime;
+    private String date;
 
-    @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime endTime;
+    private Integer day;
+
+    private String startTime;
+
+    private String endTime;
 
     private AttendantResponse organizer;
 
     private List<AttendantResponse> attendants;
 
-
     @Builder
-    public EventResponse(Long eventId, String title, String description, LocalDateTime startTime, LocalDateTime endTime, AttendantResponse organizer, List<AttendantResponse> attendants) {
+    public EventResponse(Long eventId, String title, String description, String date, Integer day, String startTime, String endTime, AttendantResponse organizer, List<AttendantResponse> attendants) {
         this.eventId = eventId;
         this.title = title;
         this.description = description;
+        this.date = date;
+        this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
         this.organizer = organizer;
@@ -68,11 +61,12 @@ public class EventResponse {
         return EventResponse.builder()
                 .eventId(event.getId())
                 .title(event.getTitle())
-                .description(event.getDescription())
+                .day(event.getStartTime().getDayOfWeek().getValue())
+                .date(event.getStartTime().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                .startTime(event.getStartTime().format(DateTimeFormatter.ofPattern("HHmm")))
+                .endTime(event.getEndTime().format(DateTimeFormatter.ofPattern("HHmm")))
                 .organizer(AttendantResponse.from(event.getOrganizer()))
                 .attendants(attendantsList)
-                .startTime(event.getStartTime())
-                .endTime(event.getEndTime())
                 .build();
     }
 }

@@ -31,7 +31,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponse login(LoginRequest request) {
         User user = findUserByEmployeeNumber(request.getEmployeeNumber());
-        String password = passwordEncoder.encode(request.getPassword());
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return LoginResponse.from(user);
         }
@@ -69,15 +68,12 @@ public class UserServiceImpl implements UserService {
     public UserResponse updatePassword(Long userId, UpdatePasswordRequest request) {
 
         User user = findUserById(userId);
-        String currentPassword = passwordEncoder.encode(request.getCurrentPassword());
-        String newPassword = passwordEncoder.encode(request.getNewPassword());
-        String validatedPassword = passwordEncoder.encode(request.getValidatedPassword());
 
         if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword()))
             throw new InvalidPasswordException("현재 비밀번호가 일치하지 않습니다.");
         else if(!request.getNewPassword().equals(request.getValidatedPassword())){
             throw new InvalidPasswordException("새 비밀번호와 검증 비밀번호가 일치하지 않습니다");}
-        user.updatePassword(newPassword);
+        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
         return UserResponse.from(user);
     }
 

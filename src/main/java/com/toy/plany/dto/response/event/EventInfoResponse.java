@@ -6,9 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.format.DateTimeFormatter;
+
 @Getter
 @NoArgsConstructor
 public class EventInfoResponse {
+    /*
+    참석자 정보 없이 반환하는 이벤트 dto
+     */
     private Long eventId;
     private String title;
     private Integer day;
@@ -27,11 +32,16 @@ public class EventInfoResponse {
     }
 
     public static EventInfoResponse from(Event event){
+        //TODO 리턴 타입 바꾸기
+        if(event.getStartTime().getDayOfYear() != event.getEndTime().getDayOfYear())
+            return null;
         return EventInfoResponse.builder()
                 .eventId(event.getId())
                 .title(event.getTitle())
-                .startTime(event.getStartTime().toString())
-                .endTime(event.getEndTime().toString())
+                .day(event.getStartTime().getDayOfWeek().getValue())
+                .date(event.getStartTime().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                .startTime(event.getStartTime().format(DateTimeFormatter.ofPattern("HHmm")))
+                .endTime(event.getEndTime().format(DateTimeFormatter.ofPattern("HHmm")))
                 .build();
     }
 
@@ -39,8 +49,10 @@ public class EventInfoResponse {
         return EventInfoResponse.builder()
                 .eventId(dto.getEventId())
                 .title(dto.getTitle())
-                .startTime(dto.getStartTime().toString())
-                .endTime(dto.getEndTime().toString())
+                .day(dto.getStartTime().getDayOfWeek().getValue())
+                .date(dto.getStartTime().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                .startTime(dto.getStartTime().format(DateTimeFormatter.ofPattern("HHmm")))
+                .endTime(dto.getStartTime().format(DateTimeFormatter.ofPattern("HHmm")))
                 .build();
     }
 }

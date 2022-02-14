@@ -2,7 +2,6 @@ package com.toy.plany.service;
 
 import com.toy.plany.dto.request.event.EventCreateRequest;
 import com.toy.plany.dto.response.event.EventResponse;
-import com.toy.plany.dto.response.event.AttendantResponse;
 import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,11 +55,14 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     @Override
     public EventResponse createEvent(Long userId, EventCreateRequest request) {
         User organizer = findUserById(userId);
+        LocalDateTime startTime = request.getDate().atTime(Integer.valueOf(request.getStartHour()), Integer.valueOf(request.getStartMinute()));
+        LocalDateTime endTime = request.getDate().atTime(Integer.valueOf(request.getEndHour()), Integer.valueOf(request.getEndHour()));
         Event event = Event.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .organizer(organizer)
-
+                .startTime(startTime)
+                .endTime(endTime)
                 .status(EventStatus.CREATED)
                 .build();
         Event savedEvent = saveEvent(event);

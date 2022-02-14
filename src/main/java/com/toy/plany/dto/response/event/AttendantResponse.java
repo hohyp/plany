@@ -1,7 +1,6 @@
 package com.toy.plany.dto.response.event;
 
 import com.toy.plany.entity.User;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,13 +12,13 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class AttendantResponse {
     @NotNull
-    private Long id;
+    private Long userId;
 
     @NotBlank
     private String employeeNum;
 
     @NotBlank
-    private String name;
+    private String userName;
 
     @NotNull
     private String department;
@@ -33,10 +32,10 @@ public class AttendantResponse {
     private String position;
 
     @Builder
-    public AttendantResponse(Long id, String employeeNum, String name, String department, String color, String fontColor, String position) {
-        this.id = id;
+    public AttendantResponse(Long userId, String employeeNum, String userName, String department, String color, String fontColor, String position) {
+        this.userId = userId;
         this.employeeNum = employeeNum;
-        this.name = name;
+        this.userName = userName;
         this.department = department;
         this.color = color;
         this.fontColor = fontColor;
@@ -45,9 +44,9 @@ public class AttendantResponse {
 
     public static AttendantResponse from(User user){
         return AttendantResponse.builder()
-                .id(user.getId())
+                .userId(user.getId())
                 .employeeNum(user.getEmployeeNum())
-                .name(user.getName())
+                .userName(user.getName())
                 .color(user.getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())

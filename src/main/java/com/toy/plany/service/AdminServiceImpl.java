@@ -51,6 +51,7 @@ public class AdminServiceImpl implements AdminService {
                 .name(request.getName())
                 .department(department)
                 .color(color)
+                .note(request.getNote())
                 .authorities(Collections.singleton(authority))
                 .build();
         User savedUser = userRepo.save(user);

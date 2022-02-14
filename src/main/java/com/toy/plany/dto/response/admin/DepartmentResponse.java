@@ -8,19 +8,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class DepartmentResponse {
-    private Long id;
-    private String name;
+    private Long departmentId;
+    private String departmentName;
 
     @Builder
-    public DepartmentResponse(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public DepartmentResponse(Long departmentId, String departmentName) {
+        this.departmentId = departmentId;
+        this.departmentName = departmentName;
     }
 
     static public DepartmentResponse from(Department department){
         return DepartmentResponse.builder()
-                .id(department.getId())
-                .name(department.getName())
+                .departmentId(department.getId())
+                .departmentName(department.getName())
                 .build();
     }
 }

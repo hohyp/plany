@@ -1,24 +1,18 @@
 package com.toy.plany.dto.response.admin;
 
-import com.toy.plany.dto.dtos.AuthorityDto;
 import com.toy.plany.entity.User;
-import com.toy.plany.entity.enums.Color;
-import com.toy.plany.entity.enums.FontColor;
-import com.toy.plany.entity.enums.UserPosition;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
 public class UserResponse {
     @NotNull
-    private Long id;
+    private Long userId;
 
     @NotBlank
     private String employeeNum;
@@ -26,10 +20,8 @@ public class UserResponse {
     private String slackUid;
 
     @NotBlank
-    private String name;
+    private String userName;
 
-    @NotBlank
-    private String email;
 
     @NotNull
     private String department;
@@ -40,19 +32,18 @@ public class UserResponse {
     @NotBlank
     private String fontColor;
 
-    private String position;
+    private String note;
 
     @Builder
-    public UserResponse(Long id, String employeeNum, String slackUid, String name, String email, String department, String color, String fontColor, String position) {
-        this.id = id;
+    public UserResponse(Long userId, String employeeNum, String slackUid, String userName, String department, String color, String fontColor, String note) {
+        this.userId = userId;
         this.employeeNum = employeeNum;
         this.slackUid = slackUid;
-        this.name = name;
-        this.email = email;
+        this.userName = userName;
         this.department = department;
         this.color = color;
         this.fontColor = fontColor;
-        this.position = position;
+        this.note = note;
     }
 
     static public UserResponse from(User user) {
@@ -60,13 +51,14 @@ public class UserResponse {
             return null;
 
         return UserResponse.builder()
-                .id(user.getId())
+                .userId(user.getId())
                 .employeeNum(user.getEmployeeNum())
-                .name(user.getName())
+                .userName(user.getName())
                 .color(user.getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
                 .slackUid(user.getSlackUid())
+                .note(user.getNote())
                 .build();
     }
 }

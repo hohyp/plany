@@ -20,11 +20,13 @@ public class UserCreateRequest {
     @NotNull
     private Long departmentId;
 
+    private String note;
 
     @Builder
-    public UserCreateRequest(String employeeNum, String name, Long departmentId) {
+    public UserCreateRequest(String employeeNum, String name, Long departmentId, String note) {
         this.employeeNum = employeeNum;
         this.name = name;
         this.departmentId = departmentId;
+        this.note = note;
     }
 }
