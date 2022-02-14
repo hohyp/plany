@@ -75,7 +75,8 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     @Override
     @Transactional
     public EventResponse readEvent(Long eventId) {
-        return null;
+        Event event = findEventById(eventId);
+        return EventResponse.from(event);
     }
 
     @Transactional

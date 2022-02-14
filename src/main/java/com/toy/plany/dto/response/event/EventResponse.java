@@ -26,7 +26,6 @@ public class EventResponse {
 
     private String description;
 
-
     private String date;
 
     private Integer day;
