@@ -5,6 +5,7 @@ import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.request.user.UpdatePasswordRequest;
 import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.dto.response.auth.LoginResponse;
+import com.toy.plany.dto.response.user.AutoCompleteUserResponse;
 import com.toy.plany.entity.User;
 import com.toy.plany.exception.exceptions.IncorrectPasswordException;
 import com.toy.plany.exception.exceptions.InvalidPasswordException;
@@ -85,8 +86,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> readAutoCompleteUserList(String keyword) {
-        //TODO 유저 검색 자동완성
-        return null;
+    public List<AutoCompleteUserResponse> readAutoCompleteUserList(String keyword) {
+        keyword += "%";
+        List<User> userList = readUserListByName(keyword);
+        return userList.stream().map(user -> AutoCompleteUserResponse.from(user)).collect(Collectors.toList());
+    }
+
+    public List<User> readUserListByName(String keyword){
+        return userRepo.findUserByName(keyword);
     }
 }

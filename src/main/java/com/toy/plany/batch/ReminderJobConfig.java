@@ -2,6 +2,7 @@ package com.toy.plany.batch;
 
 
 import static com.toy.plany.entity.QSchedule.schedule;
+
 import com.toy.plany.entity.Schedule;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -15,6 +16,7 @@ import org.springframework.batch.item.querydsl.reader.QuerydslNoOffsetPagingItem
 import org.springframework.batch.item.querydsl.reader.expression.Expression;
 import org.springframework.batch.item.querydsl.reader.options.QuerydslNoOffsetNumberOptions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -55,7 +57,7 @@ public class ReminderJobConfig {
         return stepBuilderFactory.get(readerJobStep)
                 .startLimit(3)
                 .<Schedule, Schedule>chunk(chunkSize)
-                .reader(reader())
+                .reader(reader(null))
                 .processor(processor())
                 .writer(writer())
                 .build();
@@ -63,12 +65,11 @@ public class ReminderJobConfig {
 
     @Bean
     @StepScope
-    public JpaPagingItemReader<Schedule> reader() {
-        LocalDate date = LocalDate.now();
-        LocalDateTime dateTime = LocalDateTime.now();
+    public JpaPagingItemReader<Schedule> reader(@Value("#{jobParameters[date]}") String date) {
+//        LocalDateTime targetDate = LocalDateTime.f
 
         return new JpaPagingItemReaderBuilder<Schedule>()
-                .queryString("SELECT s FROM Schedule s")
+                .queryString("SELECT s FROM Schedule s WHERE ")
                 .pageSize(chunkSize)
                 .entityManagerFactory(entityManagerFactory)
                 .name("reminderPagingReader")

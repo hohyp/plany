@@ -3,6 +3,7 @@ package com.toy.plany.controller;
 import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.request.user.UpdatePasswordRequest;
 import com.toy.plany.dto.response.admin.UserResponse;
+import com.toy.plany.dto.response.user.AutoCompleteUserResponse;
 import com.toy.plany.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +40,15 @@ public class UserController {
 
     @GetMapping("/my-department-user")
     @ApiOperation(value = "부서 구성원 조회", notes = "부서 id 를 기반으로 부서의 구성원 list를 조회한다")
-    public ResponseEntity<List<UserResponse>> readUserListByDepartment(@RequestParam Long departmentId){
+    public ResponseEntity<List<UserResponse>> readUserListByDepartment(@RequestParam Long departmentId) {
         List<UserResponse> res = userService.readMyDepartmentUser(departmentId);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/auto-complete")
+    @ApiOperation(value = "유저 이름 검색", notes = "유저 아이디랑 이름 반환")
+    public ResponseEntity<List<AutoCompleteUserResponse>> readAutoCompleteUserList(@RequestParam String keyword){
+        List<AutoCompleteUserResponse> res = userService.readAutoCompleteUserList(keyword);
         return ResponseEntity.ok(res);
     }
 }
