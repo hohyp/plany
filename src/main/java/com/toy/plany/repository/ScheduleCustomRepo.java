@@ -1,5 +1,6 @@
 package com.toy.plany.repository;
 
+import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
 
 import java.util.List;

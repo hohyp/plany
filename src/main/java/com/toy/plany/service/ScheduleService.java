@@ -8,6 +8,4 @@ public interface ScheduleService {
     ScheduleByUserResponse readScheduleListByUser(Long userId);
 
     List<ScheduleByUserResponse> readScheduleListByUserList(List<Long> userIdList);
-
-    Boolean deleteSchedule(Long userId, Long scheduleId);
 }

@@ -47,10 +47,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepo.findScheduleByUser(user);
     }
 
-    protected Schedule getScheduleById(Long scheduleId) {
-        return scheduleRepo.findById(scheduleId).orElseThrow(ScheduleNotFoundException::new);
-    }
-
     private User getUserById(Long userId) {
         return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
     }
@@ -64,17 +60,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         return res;
     }
 
-    @Override
-    public Boolean deleteSchedule(Long userId, Long scheduleId) {
-        //TODO 삭제하고 이벤트 검색할때 참석자 제대로 빠진채로 리턴하는지 확인하기
-        User user = getUserById(userId);
-        Schedule schedule = getScheduleById(scheduleId);
-        if (schedule.validateOwner(user))
-            deleteScheduleFromRepo(schedule);
-        else
-            throw new InvalidScheduleOwner("유저 " + userId + "의 스케줄이 아닌 스케줄은 삭제할 수 없습니다");
-        return null;
-    }
 
     @Transactional
     protected void deleteScheduleFromRepo(Schedule schedule) {
