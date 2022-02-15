@@ -1,6 +1,7 @@
 package com.toy.plany.controller;
 
 import com.toy.plany.dto.request.admin.UserCreateRequest;
+import com.toy.plany.dto.request.admin.UserUpdateRequest;
 import com.toy.plany.dto.response.admin.DepartmentResponse;
 import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.service.AdminService;
@@ -44,6 +45,14 @@ public class AdminController {
     @ApiOperation(value = "유저 조회", notes = "사원번호를 통해 한명의 유저를 조회한다")
     public ResponseEntity<UserResponse> readUser(@RequestParam String employeeNumber) {
         UserResponse res = adminService.readUserByEmployeeNumber(employeeNumber);
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("/user")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @ApiOperation(value = "유저 수정", notes = "유저 id와 정보를 기반으로 유저를 수정한다")
+    public ResponseEntity<UserResponse> updateUser(@RequestParam Long userId,@RequestBody @Valid UserUpdateRequest request) {
+        UserResponse res = adminService.updateUser(userId, request);
         return ResponseEntity.ok(res);
     }
 

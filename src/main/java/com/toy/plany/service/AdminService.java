@@ -1,6 +1,7 @@
 package com.toy.plany.service;
 
 import com.toy.plany.dto.request.admin.UserCreateRequest;
+import com.toy.plany.dto.request.admin.UserUpdateRequest;
 import com.toy.plany.dto.response.admin.DepartmentResponse;
 import com.toy.plany.dto.response.admin.UserResponse;
 
@@ -20,6 +21,8 @@ public interface AdminService {
     DepartmentResponse createDepartment(String name);
 
     List<DepartmentResponse> readDepartmentList();
+
+    UserResponse updateUser(Long userId, UserUpdateRequest request);
 
     Boolean deleteDepartment(Long departmentId);
 }

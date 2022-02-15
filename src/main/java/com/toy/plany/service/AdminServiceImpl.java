@@ -1,6 +1,7 @@
 package com.toy.plany.service;
 
 import com.toy.plany.dto.request.admin.UserCreateRequest;
+import com.toy.plany.dto.request.admin.UserUpdateRequest;
 import com.toy.plany.dto.response.admin.DepartmentResponse;
 import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.entity.Authority;
@@ -119,6 +120,18 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<DepartmentResponse> readDepartmentList() {
         return findAllDepartment().stream().map(department -> DepartmentResponse.from(department)).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public UserResponse updateUser(Long userId, UserUpdateRequest request) {
+        User user = findUserById(userId);
+        user.setEmployeeNum(request.getEmployeeNum());
+        Department department = getDepartmentById(request.getDepartmentId());
+        user.setDepartment(department);
+        user.setName(request.getName());
+        user.setNote(request.getNote());
+        return UserResponse.from(user);
     }
 
     @Transactional(readOnly = true)
