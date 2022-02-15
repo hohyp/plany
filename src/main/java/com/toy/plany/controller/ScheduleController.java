@@ -22,7 +22,7 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     @PreAuthorize("hasAnyRole('USER')")
     @ApiOperation(value = "스케줄 조회", notes = "user id로 받은 유저 한명의 스케줄 리스트를 조회한다")
     public ResponseEntity<ScheduleByUserResponse> readScheduleList(@RequestParam Long userId,  @Valid @RequestBody ReadScheduleRequest request) {
@@ -30,7 +30,7 @@ public class ScheduleController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/list/user-list")
+    @PostMapping("/list/user-list")
     @PreAuthorize("hasAnyRole('USER')")
     @ApiOperation(value = "여러 유저의 스케줄 조회", notes = "user id list를 기반으로 여러명의 스케줄 목록을 조회한다")
     public ResponseEntity<List<ScheduleByUserResponse>> readScheduleListByUserList(@RequestParam(value = "userIdList") List<Long> userIdList, @Valid @RequestBody ReadScheduleRequest request) {

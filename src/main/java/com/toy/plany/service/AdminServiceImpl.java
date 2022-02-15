@@ -5,12 +5,16 @@ import com.toy.plany.dto.request.admin.UserUpdateRequest;
 import com.toy.plany.dto.response.admin.DepartmentResponse;
 import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.entity.Authority;
+import com.toy.plany.entity.Color;
 import com.toy.plany.entity.Department;
 import com.toy.plany.entity.User;
-import com.toy.plany.entity.enums.Color;
+import com.toy.plany.entity.enums.Colors;
+import com.toy.plany.entity.enums.FontColor;
 import com.toy.plany.exception.exceptions.DeleteFailException;
 import com.toy.plany.exception.exceptions.DepartmentNotFoundException;
+import com.toy.plany.exception.exceptions.InsufficientColorException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
+import com.toy.plany.repository.ColorRepo;
 import com.toy.plany.repository.DepartmentRepo;
 import com.toy.plany.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,23 +33,26 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepo userRepo;
     private final DepartmentRepo departmentRepo;
     private final PasswordEncoder passwordEncoder;
+    private final ColorRepo colorRepo;
 
     @Autowired
-    public AdminServiceImpl(UserRepo userRepo, DepartmentRepo departmentRepo, PasswordEncoder passwordEncoder) {
+    public AdminServiceImpl(UserRepo userRepo, DepartmentRepo departmentRepo, PasswordEncoder passwordEncoder, ColorRepo colorRepo) {
         this.userRepo = userRepo;
         this.departmentRepo = departmentRepo;
         this.passwordEncoder = passwordEncoder;
+        this.colorRepo = colorRepo;
     }
 
     @Override
     @Transactional
     public UserResponse createUser(UserCreateRequest request) {
         Department department = getDepartmentById(request.getDepartmentId());
-        Color color = getColorByRandom();
 
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")
                 .build();
+
+        Color color = getColorByRandom();
 
         User user = User.builder()
                 .employeeNum(request.getEmployeeNum())
@@ -59,15 +67,50 @@ public class AdminServiceImpl implements AdminService {
         return UserResponse.from(savedUser);
     }
 
+    @Transactional
+    public Color getColorByRandom() {
+        List<Color> colorList = getUnusedColorList();
+        final int size = colorList.size();
+        if (size == 0)
+            throw new InsufficientColorException();
+        Random random = new Random();
+        Color color = colorList.get(random.nextInt(size));
+        color.use();
+        return color;
+    }
+
+    public Color addColor(Colors colors, FontColor fontColor){
+        Color color = Color.builder()
+                .color(colors)
+                .fontColor(fontColor)
+                .build();
+        return colorRepo.save(color);
+    }
+
+    public List<Color> getUnusedColorList() {
+        return colorRepo.findAllColorUnused();
+    }
+
+
     @Override
     public UserResponse readUserByEmployeeNumber(String employeeNumber) {
         User user = findUserByEmployeeNum(employeeNumber);
         return UserResponse.from(user);
     }
 
+    @Override
+    public List<UserResponse> readUserByName(String name) {
+        return findUserByName(name).stream().map(user -> UserResponse.from(user)).collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     private User findUserByEmployeeNum(String employeeNumber) {
         return userRepo.findUserByEmployeeNum(employeeNumber).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    private List<User> findUserByName(String name) {
+        return userRepo.findUserByName(name);
     }
 
     @Transactional(readOnly = true)
@@ -101,6 +144,8 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     private Boolean deleteUserFromRepo(Long userId) {
         try {
+            User user = findUserById(userId);
+            user.getColor().unUse();
             userRepo.deleteById(userId);
             return true;
         } catch (Exception e) {
@@ -152,11 +197,6 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             throw new DeleteFailException();
         }
-    }
-
-    private Color getColorByRandom() {
-        //TODO Random return, 없으면 예외 발생하도록 수정
-        return Color.RED;
     }
 
     @Transactional(readOnly = true)

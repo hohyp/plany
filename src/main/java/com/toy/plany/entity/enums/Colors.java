@@ -1,15 +1,15 @@
 package com.toy.plany.entity.enums;
 
+import com.toy.plany.exception.exceptions.InsufficientColorException;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
-public enum Color {
+public enum Colors {
 
     //YELLOW
     LIGHT_YELLOW("#FFF7B8", FontColor.BLACK),
@@ -83,30 +83,9 @@ public enum Color {
 
     private String code;
     private FontColor fontColor;
-    private Boolean isUsed;
-    static private Integer colorCount;
 
-    Color(String code, FontColor fontColor) {
+    Colors(String code, FontColor fontColor) {
         this.code = code;
         this.fontColor = fontColor;
-        this.isUsed = false;
-    }
-
-    public void use(Color color) {
-        colorCount++;
-        color.isUsed = true;
-    }
-
-    //TODO used false 인것만 리스트 생성하기
-
-    public static Color getRandomColor() {
-        if(colorCount >= 50)
-            return null;
-        List<Color> VALUES = List.of(values());
-        final int SIZE = VALUES.size();
-        Random RANDOM = new Random();
-        Color color = VALUES.get(RANDOM.nextInt(SIZE));
-        color.use(color);
-        return color;
     }
 }

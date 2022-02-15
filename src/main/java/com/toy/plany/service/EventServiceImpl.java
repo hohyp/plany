@@ -57,7 +57,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     public EventResponse createEvent(Long userId, EventCreateRequest request) {
         User organizer = findUserById(userId);
         LocalDateTime startTime = request.getDate().atTime(Integer.valueOf(request.getStartHour()), Integer.valueOf(request.getStartMinute()));
-        LocalDateTime endTime = request.getDate().atTime(Integer.valueOf(request.getEndHour()), Integer.valueOf(request.getEndHour()));
+        LocalDateTime endTime = request.getDate().atTime(Integer.valueOf(request.getEndHour()), Integer.valueOf(request.getEndMinute()));
         Event event = Event.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -88,16 +88,11 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         }
     }
 
-    private void validateScheduleTime() {
-        //TODO 스케줄 생성 전 가용시간 검증
-    }
-
     @Transactional
     private List<Schedule> createScheduleList(Event event, List<Long> attendancesList) {
         List<Schedule> scheduleList = new ArrayList<>();
         for (Long userId : attendancesList) {
             User user = findUserById(userId);
-            validateScheduleTime();
             Schedule schedule = createSchedule(user, event);
             scheduleList.add(schedule);
         }

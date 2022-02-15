@@ -1,9 +1,7 @@
 package com.toy.plany.controller;
 
-import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.request.user.UpdatePasswordRequest;
 import com.toy.plany.dto.response.admin.UserResponse;
-import com.toy.plany.dto.response.user.AutoCompleteUserResponse;
 import com.toy.plany.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -48,8 +46,8 @@ public class UserController {
 
     @GetMapping("/auto-complete")
     @ApiOperation(value = "유저 이름 검색", notes = "유저 아이디랑 이름 반환")
-    public ResponseEntity<List<AutoCompleteUserResponse>> readAutoCompleteUserList(@RequestParam String keyword){
-        List<AutoCompleteUserResponse> res = userService.readAutoCompleteUserList(keyword);
+    public ResponseEntity<List<UserResponse>> readAutoCompleteUserList(@RequestParam String keyword){
+        List<UserResponse> res = userService.readAutoCompleteUserList(keyword);
         return ResponseEntity.ok(res);
     }
 }

@@ -1,6 +1,7 @@
 package com.toy.plany.entity;
 
-import com.toy.plany.entity.enums.Color;
+import com.toy.plany.entity.enums.Colors;
+import com.toy.plany.entity.enums.FontColor;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,8 +38,8 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "DEPARTMENT_ID")
     private Department department;
 
-    @Column(length = 10, nullable = false)
-    @Enumerated(EnumType.STRING)
+    @OneToOne
+    @JoinColumn(name = "COLOR_ID")
     private Color color;
 
     private String note;
@@ -63,6 +64,7 @@ public class User extends BaseTimeEntity {
         this.note = note;
         this.authorities = authorities;
     }
+
 
     public void updateSlackUid(String slackUid) {
         this.slackUid = slackUid;

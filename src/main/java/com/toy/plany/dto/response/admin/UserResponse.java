@@ -54,7 +54,7 @@ public class UserResponse {
                 .userId(user.getId())
                 .employeeNum(user.getEmployeeNum())
                 .userName(user.getName())
-                .color(user.getColor().getCode())
+                .color(user.getColor().getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
                 .slackUid(user.getSlackUid())

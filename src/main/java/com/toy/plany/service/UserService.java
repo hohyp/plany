@@ -19,5 +19,5 @@ public interface UserService {
 
     List<UserResponse> readMyDepartmentUser(Long departmentId);
 
-    List<AutoCompleteUserResponse> readAutoCompleteUserList(String keyword);
+    List<UserResponse> readAutoCompleteUserList(String keyword);
 }

@@ -47,7 +47,7 @@ public class AttendantResponse {
                 .userId(user.getId())
                 .employeeNum(user.getEmployeeNum())
                 .userName(user.getName())
-                .color(user.getColor().getCode())
+                .color(user.getColor().getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
                 .build();

@@ -4,6 +4,9 @@ import com.toy.plany.dto.request.admin.UserCreateRequest;
 import com.toy.plany.dto.request.admin.UserUpdateRequest;
 import com.toy.plany.dto.response.admin.DepartmentResponse;
 import com.toy.plany.dto.response.admin.UserResponse;
+import com.toy.plany.entity.Color;
+import com.toy.plany.entity.enums.Colors;
+import com.toy.plany.entity.enums.FontColor;
 import com.toy.plany.service.AdminService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -43,8 +46,16 @@ public class AdminController {
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @ApiOperation(value = "유저 조회", notes = "사원번호를 통해 한명의 유저를 조회한다")
-    public ResponseEntity<UserResponse> readUser(@RequestParam String employeeNumber) {
+    public ResponseEntity<UserResponse> readUserByEmployeeNum(@RequestParam String employeeNumber) {
         UserResponse res = adminService.readUserByEmployeeNumber(employeeNumber);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/user/search")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @ApiOperation(value = "유저 검색", notes = "이름 통해 유저를 검색한다")
+    public ResponseEntity<List<UserResponse>> readUserByName(@RequestParam String userName) {
+        List<UserResponse> res = adminService.readUserByName(userName);
         return ResponseEntity.ok(res);
     }
 
@@ -96,6 +107,12 @@ public class AdminController {
     public ResponseEntity<Boolean> deleteDepartment(@RequestParam Long departmentId) {
         adminService.deleteDepartment(departmentId);
         return ResponseEntity.ok(true);
+    }
+
+    @PostMapping("/color")
+    public ResponseEntity<Color> addColor(@RequestParam Colors color, @RequestParam FontColor fontColor){
+        Color c = adminService.addColor(color, fontColor);
+        return ResponseEntity.ok(c);
     }
 
 

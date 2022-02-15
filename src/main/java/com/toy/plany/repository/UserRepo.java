@@ -15,11 +15,14 @@ public interface UserRepo extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = "authorities")
     Optional<User> findUserByEmployeeNum(String employeeNum);
 
+    @Query("SELECT u FROM User u WHERE u.name = ?1")
+    List<User> findUserByName(String Name);
+
     List<User> findUserByDepartmentId(Long departmentId);
 
     @Query("SELECT u FROM User u WHERE u.id IN (:users)")
     List<User> findUserByIdList(@Param("users") List<Long> userIdList);
 
     @Query("SELECT u FROM User u WHERE u.name LIKE ?1")
-    List<User> findUserByName(String keyword);
+    List<User> findUserByNameAutoCompleted(String keyword);
 }

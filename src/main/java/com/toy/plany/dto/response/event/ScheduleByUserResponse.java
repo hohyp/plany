@@ -29,7 +29,7 @@ public class ScheduleByUserResponse {
         return ScheduleByUserResponse.builder()
                 .userId(user.getId())
                 .userName(user.getName())
-                .color(user.getColor().getCode())
+                .color(user.getColor().getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .eventInfoResponseList(eventInfoResponseList)
                 .build();

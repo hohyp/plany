@@ -1,6 +1,5 @@
 package com.toy.plany.service;
 
-import com.toy.plany.dto.dtos.TokenDto;
 import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.request.user.UpdatePasswordRequest;
 import com.toy.plany.dto.response.admin.UserResponse;
@@ -86,13 +85,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<AutoCompleteUserResponse> readAutoCompleteUserList(String keyword) {
+    public List<UserResponse> readAutoCompleteUserList(String keyword) {
         keyword += "%";
         List<User> userList = readUserListByName(keyword);
-        return userList.stream().map(user -> AutoCompleteUserResponse.from(user)).collect(Collectors.toList());
+        return userList.stream().map(user -> UserResponse.from(user)).collect(Collectors.toList());
     }
 
     public List<User> readUserListByName(String keyword){
-        return userRepo.findUserByName(keyword);
+        return userRepo.findUserByNameAutoCompleted(keyword);
     }
 }
