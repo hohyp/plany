@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 @CrossOrigin("*")
 @Controller
@@ -33,12 +34,12 @@ public class UserController {
     @PatchMapping("/password")
     @PreAuthorize("hasAnyRole('USER')")
     @ApiOperation(value = "비밀번호 변경", notes = " request body field 수정 필요")
-    public ResponseEntity<UserResponse> updatePassword(@RequestParam Long userId, @RequestBody UpdatePasswordRequest request){
+    public ResponseEntity<UserResponse> updatePassword(@RequestParam Long userId, @Valid @RequestBody UpdatePasswordRequest request){
         UserResponse res = userService.updatePassword(userId, request);
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/my-department-user")
+    @GetMapping("/department-user")
     @ApiOperation(value = "부서 구성원 조회", notes = "부서 id 를 기반으로 부서의 구성원 list를 조회한다")
     public ResponseEntity<List<UserResponse>> readUserListByDepartment(@RequestParam Long departmentId) {
         List<UserResponse> res = userService.readMyDepartmentUser(departmentId);

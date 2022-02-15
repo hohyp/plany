@@ -1,5 +1,6 @@
 package com.toy.plany.service;
 
+import com.toy.plany.dto.request.schedule.ReadScheduleRequest;
 import com.toy.plany.dto.response.event.EventInfoResponse;
 import com.toy.plany.dto.response.event.AttendantResponse;
 import com.toy.plany.dto.response.event.ScheduleByUserResponse;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,9 +37,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ScheduleByUserResponse readScheduleListByUser(Long userId) {
+    public ScheduleByUserResponse readScheduleListByUser(Long userId, ReadScheduleRequest request) {
         User user = getUserById(userId);
-        List<EventInfoResponse> eventInfoResponseList = getEventInfoResponseList(userId);
+        List<EventInfoResponse> eventInfoResponseList = getEventInfoResponseList(userId, request.getStartDate(), request.getEndDate());
 
         return ScheduleByUserResponse.from(user, eventInfoResponseList);
     }
@@ -52,10 +54,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleByUserResponse> readScheduleListByUserList(List<Long> userIdList) {
+    public List<ScheduleByUserResponse> readScheduleListByUserList(List<Long> userIdList, ReadScheduleRequest request) {
         List<ScheduleByUserResponse> res = new ArrayList<>();
         for (Long id : userIdList) {
-            res.add(readScheduleListByUser(id));
+            res.add(readScheduleListByUser(id, request));
         }
         return res;
     }
@@ -71,10 +73,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    private List<EventInfoResponse> getEventInfoResponseList(Long userId) {
-        List<Long> eventIds = scheduleRepo.findEventIdListByUser(userId);
-        System.out.println(eventIds);
-        return eventRepo.getEventInfo(eventIds).stream().map(it -> EventInfoResponse.from(it)).collect(Collectors.toList());
+    private List<EventInfoResponse> getEventInfoResponseList(Long userId, LocalDate startDate, LocalDate endDate) {
+        return scheduleRepo.getEventInfo(userId, startDate, endDate).stream().map(it -> EventInfoResponse.from(it)).collect(Collectors.toList());
     }
 
     private List<AttendantResponse> createAttendantsList(List<Schedule> scheduleList) {

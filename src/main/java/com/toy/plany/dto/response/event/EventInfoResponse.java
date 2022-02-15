@@ -52,7 +52,7 @@ public class EventInfoResponse {
                 .day(dto.getStartTime().getDayOfWeek().getValue())
                 .date(dto.getStartTime().format(DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .startTime(dto.getStartTime().format(DateTimeFormatter.ofPattern("HHmm")))
-                .endTime(dto.getStartTime().format(DateTimeFormatter.ofPattern("HHmm")))
+                .endTime(dto.getEndTime().format(DateTimeFormatter.ofPattern("HHmm")))
                 .build();
     }
 }

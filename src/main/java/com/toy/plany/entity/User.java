@@ -73,22 +73,18 @@ public class User extends BaseTimeEntity {
     }
 
     public void setEmployeeNum(String employeeNum) {
-        if(!this.employeeNum.equals(employeeNum))
             this.employeeNum = employeeNum;
     }
 
     public void setName(String name) {
-        if(!this.name.equals(name))
             this.name = name;
     }
 
     public void setDepartment(Department department) {
-        if(!this.department.equals(department))
             this.department = department;
     }
 
     public void setNote(String note) {
-        if(!this.note.equals(note))
             this.note = note;
     }
 }
