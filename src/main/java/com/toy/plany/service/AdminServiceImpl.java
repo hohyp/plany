@@ -89,6 +89,14 @@ public class AdminServiceImpl implements AdminService {
         return deleteUserFromRepo(userId);
     }
 
+    @Override
+    public Boolean deleteUser(List<Long> userIdList) {
+        for (Long userId : userIdList)
+            deleteUserFromRepo(userId);
+
+        return true;
+    }
+
     @Transactional
     private Boolean deleteUserFromRepo(Long userId) {
         try {

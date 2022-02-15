@@ -55,6 +55,14 @@ public class AdminController {
         return ResponseEntity.ok(res);
     }
 
+    @DeleteMapping("/user/list")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @ApiOperation(value = "유저 리스트 삭제", notes = "유저 id List를 통해 유저를 삭제한다")
+    public ResponseEntity<Boolean> deleteUserList(@RequestParam(value = "userIdList") List<Long> userIdList) {
+        Boolean res = adminService.deleteUser(userIdList);
+        return ResponseEntity.ok(res);
+    }
+
 
     @PostMapping("/department")
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -80,4 +88,6 @@ public class AdminController {
         adminService.deleteDepartment(departmentId);
         return ResponseEntity.ok(true);
     }
+
+
 }

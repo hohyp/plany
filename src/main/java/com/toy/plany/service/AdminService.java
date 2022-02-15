@@ -15,10 +15,11 @@ public interface AdminService {
 
     Boolean deleteUser(Long userId);
 
+    Boolean deleteUser(List<Long> userIdList);
+
     DepartmentResponse createDepartment(String name);
 
     List<DepartmentResponse> readDepartmentList();
 
     Boolean deleteDepartment(Long departmentId);
-
 }
