@@ -37,4 +37,12 @@ public class ScheduleController {
         List<ScheduleByUserResponse> res = scheduleService.readScheduleListByUserList(userIdList, request);
         return ResponseEntity.ok(res);
     }
+
+    @DeleteMapping
+    @PreAuthorize("hasAnyRole('USER')")
+    @ApiOperation(value = "스케줄 삭제", notes = "스케줄 삭제")
+    public ResponseEntity<Boolean> deleteSchedule(@RequestParam Long userId, @RequestParam Long eventId) {
+        Boolean res = scheduleService.deleteSchedule(userId, eventId);
+        return ResponseEntity.ok(res);
+    }
 }

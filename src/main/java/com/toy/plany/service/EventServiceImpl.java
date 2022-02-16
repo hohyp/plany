@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +66,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
                 .startTime(startTime)
                 .endTime(endTime)
                 .status(AlarmStatus.CREATED)
+                .location(request.getLocation())
                 .build();
         Event savedEvent = saveEvent(event);
         List<Schedule> scheduleList = createScheduleList(savedEvent, request.getAttendances());
@@ -126,17 +128,20 @@ public class EventServiceImpl implements EventService, SendAlarmService {
 
     @Override
     public void sendAlarm(Schedule schedule, AlarmStatus status) {
-        String message = createAlarmMessage(schedule.getUser().getSlackUid(), schedule.getTitle(), status.getValue(), schedule.getStartTime().toString());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분");
+        String startDateTime = schedule.getStartTime().format(formatter);
+        String endDateTime = schedule.getEndTime().format(formatter);
+        String message = createAlarmMessage(schedule.getUser().getSlackUid(), schedule.getTitle(), status.getValue(), startDateTime, endDateTime);
         sendSlackDM(message);
     }
 
-    private String createAlarmMessage(String slackUid, String scheduleTitle, String reminderType, String from, String to){
-        String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " : " + scheduleTitle + "\"}";
+    private String createAlarmMessage(String slackUid, String scheduleTitle, String reminderType, String from, String to) {
+        String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " : " + scheduleTitle + " from " + from + " to " + to + "\"}";
         return body;
     }
 
-    private String createAlarmMessage(String slackUid, String scheduleTitle, String reminderType, String at){
-        String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " : " + scheduleTitle + "\"}";
+    private String createAlarmMessage(String slackUid, String scheduleTitle, String reminderType, String at) {
+        String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " : " + scheduleTitle + " at " + at + "\"}";
         return body;
     }
 
@@ -159,9 +164,10 @@ public class EventServiceImpl implements EventService, SendAlarmService {
             throw new InvalidOrganizerException();
     }
 
-    public void sendAlarm(Event event){
+    @Override
+    public void sendAlarm(Event event) {
         List<Schedule> attendants = event.getScheduleList();
-        for(Schedule s : attendants){
+        for (Schedule s : attendants) {
             sendAlarm(s, AlarmStatus.CANCELED);
         }
     }
@@ -192,8 +198,6 @@ public class EventServiceImpl implements EventService, SendAlarmService {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + SLACK_BOT_TOKEN);
             headers.add("Content-type", "application/json; charset=utf-8");
-
-            //TODO from, to 추가하기
 
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 

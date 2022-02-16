@@ -10,9 +10,14 @@ import com.toy.plany.exception.exceptions.IncorrectPasswordException;
 import com.toy.plany.exception.exceptions.InvalidPasswordException;
 import com.toy.plany.exception.exceptions.UserNotFoundException;
 import com.toy.plany.repository.UserRepo;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,8 +38,7 @@ public class UserServiceImpl implements UserService {
         User user = findUserByEmployeeNumber(request.getEmployeeNumber());
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return LoginResponse.from(user);
-        }
-        else
+        } else
             throw new IncorrectPasswordException();
     }
 
@@ -69,10 +73,11 @@ public class UserServiceImpl implements UserService {
 
         User user = findUserById(userId);
 
-        if(!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword()))
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword()))
             throw new InvalidPasswordException("현재 비밀번호가 일치하지 않습니다.");
-        else if(!request.getNewPassword().equals(request.getValidatedPassword())){
-            throw new InvalidPasswordException("새 비밀번호와 검증 비밀번호가 일치하지 않습니다");}
+        else if (!request.getNewPassword().equals(request.getValidatedPassword())) {
+            throw new InvalidPasswordException("새 비밀번호와 검증 비밀번호가 일치하지 않습니다");
+        }
         user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
         return UserResponse.from(user);
     }
@@ -91,7 +96,8 @@ public class UserServiceImpl implements UserService {
         return userList.stream().map(user -> UserResponse.from(user)).collect(Collectors.toList());
     }
 
-    public List<User> readUserListByName(String keyword){
+    @Transactional(readOnly = true)
+    public List<User> readUserListByName(String keyword) {
         return userRepo.findUserByNameAutoCompleted(keyword);
     }
 }

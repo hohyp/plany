@@ -50,4 +50,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<ErrorResponse> ExceptionHandler(Exception e) {
+        final ErrorResponse response = ErrorResponse.from(ErrorCode.HANDLE_ACCESS_DENIED);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 }

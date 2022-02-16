@@ -89,8 +89,8 @@ public class ReminderJobConfig {
         // 2. Querydsl Reader
         return new QuerydslNoOffsetPagingItemReader<>(entityManagerFactory, chunkSize, options, queryFactory -> queryFactory
                 .selectFrom(schedule)
-                .where(schedule.status.eq(AlarmStatus.CREATED)
-                        .and(schedule.remindTime.eq(dateTime))));
+                .where(schedule.remindTime.eq(dateTime)
+                        .and(schedule.status.eq(AlarmStatus.CREATED))));
 
     }
 
@@ -104,6 +104,7 @@ public class ReminderJobConfig {
             return item;
         };
     }
+
 
     @Bean
     public JpaItemWriter<Schedule> writer() {

@@ -1,6 +1,5 @@
 package com.toy.plany.dto.response.event;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
 import com.toy.plany.entity.User;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +32,14 @@ public class EventResponse {
 
     private String endTime;
 
+    private String location;
+
     private AttendantResponse organizer;
 
-    private List<AttendantResponse> attendants;
+    private List<AttendantResponse> attendances;
 
     @Builder
-    public EventResponse(Long eventId, String title, String description, String date, Integer day, String startTime, String endTime, AttendantResponse organizer, List<AttendantResponse> attendants) {
+    public EventResponse(Long eventId, String title, String description, String date, Integer day, String startTime, String endTime, String location, AttendantResponse organizer, List<AttendantResponse> attendances) {
         this.eventId = eventId;
         this.title = title;
         this.description = description;
@@ -47,8 +47,9 @@ public class EventResponse {
         this.day = day;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.location = location;
         this.organizer = organizer;
-        this.attendants = attendants;
+        this.attendances = attendances;
     }
 
     static public EventResponse from(Event event) {
@@ -65,7 +66,8 @@ public class EventResponse {
                 .startTime(event.getStartTime().format(DateTimeFormatter.ofPattern("HHmm")))
                 .endTime(event.getEndTime().format(DateTimeFormatter.ofPattern("HHmm")))
                 .organizer(AttendantResponse.from(event.getOrganizer()))
-                .attendants(attendantsList)
+                .attendances(attendantsList)
+                .location(event.getLocation())
                 .build();
     }
 }

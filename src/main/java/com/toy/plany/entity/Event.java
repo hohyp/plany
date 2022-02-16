@@ -27,6 +27,8 @@ public class Event extends BaseTimeEntity {
 
     private String description;
 
+    private String location;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ORGANIZER_ID")
     private User organizer;
@@ -48,7 +50,7 @@ public class Event extends BaseTimeEntity {
     private AlarmStatus status;
 
     @Builder
-    public Event(Long id, String title, String description, User organizer, List<Schedule> scheduleList, LocalDateTime startTime, LocalDateTime endTime, AlarmStatus status) {
+    public Event(Long id, String title, String description, User organizer, List<Schedule> scheduleList, LocalDateTime startTime, LocalDateTime endTime, AlarmStatus status, String location) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -57,6 +59,7 @@ public class Event extends BaseTimeEntity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
+        this.location = location;
     }
 
     public Event updateScheduleList(List<Schedule> scheduleList) {

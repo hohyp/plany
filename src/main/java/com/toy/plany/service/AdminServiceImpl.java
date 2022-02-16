@@ -79,6 +79,7 @@ public class AdminServiceImpl implements AdminService {
         return color;
     }
 
+    @Transactional
     public Color addColor(Colors colors, FontColor fontColor){
         Color color = Color.builder()
                 .color(colors)
@@ -87,6 +88,7 @@ public class AdminServiceImpl implements AdminService {
         return colorRepo.save(color);
     }
 
+    @Transactional
     public List<Color> getUnusedColorList() {
         return colorRepo.findAllColorUnused();
     }
@@ -99,22 +101,23 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional
     public List<UserResponse> readUserByName(String name) {
         return findUserByName(name).stream().map(user -> UserResponse.from(user)).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    private User findUserByEmployeeNum(String employeeNumber) {
+    public User findUserByEmployeeNum(String employeeNumber) {
         return userRepo.findUserByEmployeeNum(employeeNumber).orElseThrow(UserNotFoundException::new);
     }
 
     @Transactional(readOnly = true)
-    private List<User> findUserByName(String name) {
+    public List<User> findUserByName(String name) {
         return userRepo.findUserByName(name);
     }
 
     @Transactional(readOnly = true)
-    private User findUserById(Long userId) {
+    public User findUserById(Long userId) {
         return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
