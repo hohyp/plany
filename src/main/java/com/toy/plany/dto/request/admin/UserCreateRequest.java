@@ -1,6 +1,5 @@
 package com.toy.plany.dto.request.admin;
 
-import com.toy.plany.entity.enums.UserPosition;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ public class UserCreateRequest {
     private String employeeNum;
 
     @NotBlank
-    private String name;
+    private String userName;
 
     @NotNull
     private Long departmentId;
@@ -23,9 +22,9 @@ public class UserCreateRequest {
     private String note;
 
     @Builder
-    public UserCreateRequest(String employeeNum, String name, Long departmentId, String note) {
+    public UserCreateRequest(String employeeNum, String userName, Long departmentId, String note) {
         this.employeeNum = employeeNum;
-        this.name = name;
+        this.userName = userName;
         this.departmentId = departmentId;
         this.note = note;
     }

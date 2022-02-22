@@ -22,6 +22,8 @@ public class UserResponse {
     @NotBlank
     private String userName;
 
+    @NotNull
+    private Long departmentId;
 
     @NotNull
     private String department;
@@ -35,11 +37,12 @@ public class UserResponse {
     private String note;
 
     @Builder
-    public UserResponse(Long userId, String employeeNum, String slackUid, String userName, String department, String color, String fontColor, String note) {
+    public UserResponse(Long userId, String employeeNum, String slackUid, String userName, Long departmentId, String department, String color, String fontColor, String note) {
         this.userId = userId;
         this.employeeNum = employeeNum;
         this.slackUid = slackUid;
         this.userName = userName;
+        this.departmentId = departmentId;
         this.department = department;
         this.color = color;
         this.fontColor = fontColor;
@@ -57,6 +60,7 @@ public class UserResponse {
                 .color(user.getColor().getColor().getCode())
                 .fontColor(user.getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
+                .departmentId(user.getDepartment().getId())
                 .slackUid(user.getSlackUid())
                 .note(user.getNote())
                 .build();

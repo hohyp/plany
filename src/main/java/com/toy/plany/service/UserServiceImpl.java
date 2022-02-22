@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional(readOnly = true)
-    private User findUserById(Long userId) {
+    public User findUserById(Long userId) {
         return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 

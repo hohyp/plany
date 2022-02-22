@@ -38,7 +38,7 @@ public class User extends BaseTimeEntity {
     @JoinColumn(name = "DEPARTMENT_ID")
     private Department department;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COLOR_ID")
     private Color color;
 

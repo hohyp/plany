@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -56,9 +57,13 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     @Override
     @Transactional
     public EventResponse createEvent(Long userId, EventCreateRequest request) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(request.getDate(), formatter);
+
         User organizer = findUserById(userId);
-        LocalDateTime startTime = request.getDate().atTime(Integer.valueOf(request.getStartHour()), Integer.valueOf(request.getStartMinute()));
-        LocalDateTime endTime = request.getDate().atTime(Integer.valueOf(request.getEndHour()), Integer.valueOf(request.getEndMinute()));
+        LocalDateTime startTime = date.atTime(Integer.valueOf(request.getStartHour()), Integer.valueOf(request.getStartMinute()));
+        LocalDateTime endTime = date.atTime(Integer.valueOf(request.getEndHour()), Integer.valueOf(request.getEndMinute()));
+        //TODO 날짜 검증하기
         Event event = Event.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -102,7 +107,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     }
 
 
-    private Schedule createSchedule(User user, Event event) {
+    public Schedule createSchedule(User user, Event event) {
         Schedule schedule = Schedule.builder()
                 .user(user)
                 .event(event)
@@ -116,23 +121,13 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     }
 
     @Transactional
-    private Schedule saveSchedule(Schedule schedule) {
+    public Schedule saveSchedule(Schedule schedule) {
         try {
-            sendAlarm(schedule, schedule.getStatus());
+            sendAlarm(schedule, AlarmStatus.CREATED);
             return scheduleRepo.save(schedule);
         } catch (Exception e) {
             throw new SaveFailException();
         }
-    }
-
-
-    @Override
-    public void sendAlarm(Schedule schedule, AlarmStatus status) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분");
-        String startDateTime = schedule.getStartTime().format(formatter);
-        String endDateTime = schedule.getEndTime().format(formatter);
-        String message = createAlarmMessage(schedule.getUser().getSlackUid(), schedule.getTitle(), status.getValue(), startDateTime, endDateTime);
-        sendSlackDM(message);
     }
 
     private String createAlarmMessage(String slackUid, String scheduleTitle, String reminderType, String from, String to) {
@@ -140,13 +135,8 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         return body;
     }
 
-    private String createAlarmMessage(String slackUid, String scheduleTitle, String reminderType, String at) {
-        String body = "{\"channel\": \"" + slackUid + "\", \"text\" : \"" + "Event " + reminderType + " : " + scheduleTitle + " at " + at + "\"}";
-        return body;
-    }
-
     @Transactional(readOnly = true)
-    private User findUserById(Long userId) {
+    public User findUserById(Long userId) {
         return userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
@@ -156,7 +146,6 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         Event event = findEventById(eventId);
         User user = findUserById(userId);
         if (validateOrganizer(event.getOrganizer(), user)) {
-            event.updateStatus(AlarmStatus.CANCELED);
             sendAlarm(event);
             deleteEventFromRepo(event);
             return true;
@@ -172,7 +161,18 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         }
     }
 
-    private void deleteEventFromRepo(Event event) {
+
+    @Override
+    public void sendAlarm(Schedule schedule, AlarmStatus status) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분");
+        String startDateTime = schedule.getStartTime().format(formatter);
+        String endDateTime = schedule.getEndTime().format(formatter);
+        String message = createAlarmMessage(schedule.getUser().getSlackUid(), schedule.getTitle(), status.getValue(), startDateTime, endDateTime);
+        sendSlackDM(message);
+    }
+
+    @Transactional
+    public void deleteEventFromRepo(Event event) {
         try {
             eventRepo.delete(event);
         } catch (Exception e) {
@@ -192,7 +192,8 @@ public class EventServiceImpl implements EventService, SendAlarmService {
     }
 
 
-    private void sendSlackDM(String body) {
+    @Transactional
+    public void sendSlackDM(String body) {
         try {
 
             HttpHeaders headers = new HttpHeaders();

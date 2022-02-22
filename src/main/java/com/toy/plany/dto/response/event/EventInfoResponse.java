@@ -32,7 +32,6 @@ public class EventInfoResponse {
     }
 
     public static EventInfoResponse from(Event event){
-        //TODO 리턴 타입 바꾸기
         if(event.getStartTime().getDayOfYear() != event.getEndTime().getDayOfYear())
             return null;
         return EventInfoResponse.builder()

@@ -1,5 +1,6 @@
 package com.toy.plany.service;
 
+import com.toy.plany.dto.dtos.FilteredEventDto;
 import com.toy.plany.dto.request.schedule.ReadScheduleRequest;
 import com.toy.plany.dto.response.event.EventInfoResponse;
 import com.toy.plany.dto.response.event.AttendantResponse;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,6 +97,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Transactional
     public List<EventInfoResponse> getEventInfoResponseList(Long userId, LocalDate startDate, LocalDate endDate) {
-        return scheduleRepo.getEventInfo(userId, startDate, endDate).stream().map(it -> EventInfoResponse.from(it)).collect(Collectors.toList());
+        return scheduleRepo.getEventInfo(userId, startDate, endDate).stream().sorted(Comparator.comparing(FilteredEventDto::getStartTime)).map(it -> EventInfoResponse.from(it)).collect(Collectors.toList());
     }
 }

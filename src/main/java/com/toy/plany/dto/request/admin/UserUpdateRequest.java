@@ -14,7 +14,7 @@ public class UserUpdateRequest {
     private String employeeNum;
 
     @NotBlank
-    private String name;
+    private String userName;
 
     @NotNull
     private Long departmentId;
@@ -22,9 +22,9 @@ public class UserUpdateRequest {
     private String note;
 
     @Builder
-    public UserUpdateRequest(String employeeNum, String name, Long departmentId, String note) {
+    public UserUpdateRequest(String employeeNum, String userName, Long departmentId, String note) {
         this.employeeNum = employeeNum;
-        this.name = name;
+        this.userName = userName;
         this.departmentId = departmentId;
         this.note = note;
     }

@@ -57,7 +57,7 @@ public class AdminServiceImpl implements AdminService {
         User user = User.builder()
                 .employeeNum(request.getEmployeeNum())
                 .password(passwordEncoder.encode(User.DEFAULT_PASSWORD))
-                .name(request.getName())
+                .name(request.getUserName())
                 .department(department)
                 .color(color)
                 .note(request.getNote())
@@ -127,7 +127,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional(readOnly = true)
-    private List<User> findAllUser() {
+    public List<User> findAllUser() {
         return userRepo.findAll();
     }
 
@@ -145,7 +145,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional
-    private Boolean deleteUserFromRepo(Long userId) {
+    public Boolean deleteUserFromRepo(Long userId) {
         try {
             User user = findUserById(userId);
             user.getColor().unUse();
@@ -177,13 +177,13 @@ public class AdminServiceImpl implements AdminService {
         user.setEmployeeNum(request.getEmployeeNum());
         Department department = getDepartmentById(request.getDepartmentId());
         user.setDepartment(department);
-        user.setName(request.getName());
+        user.setName(request.getUserName());
         user.setNote(request.getNote());
         return UserResponse.from(user);
     }
 
     @Transactional(readOnly = true)
-    private List<Department> findAllDepartment() {
+    public List<Department> findAllDepartment() {
         return departmentRepo.findAll();
     }
 
@@ -193,7 +193,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional
-    private Boolean deleteDepartmentFromRepo(Long departmentId) {
+    public Boolean deleteDepartmentFromRepo(Long departmentId) {
         try {
             departmentRepo.deleteById(departmentId);
             return true;
@@ -203,7 +203,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional(readOnly = true)
-    private Department getDepartmentById(Long departmentId) {
+    public Department getDepartmentById(Long departmentId) {
         return departmentRepo.findById(departmentId).orElseThrow(DepartmentNotFoundException::new);
     }
 }

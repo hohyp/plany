@@ -67,6 +67,7 @@ public class EventResponse {
                 .endTime(event.getEndTime().format(DateTimeFormatter.ofPattern("HHmm")))
                 .organizer(AttendantResponse.from(event.getOrganizer()))
                 .attendances(attendantsList)
+                .description(event.getDescription())
                 .location(event.getLocation())
                 .build();
     }
