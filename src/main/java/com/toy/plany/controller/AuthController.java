@@ -1,6 +1,6 @@
 package com.toy.plany.controller;
 
-import com.toy.plany.dto.dtos.TokenDto;
+import com.toy.plany.dto.response.auth.TokenDto;
 import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.response.auth.LoginResponse;
 import com.toy.plany.jwt.JwtFilter;

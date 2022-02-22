@@ -1,4 +1,4 @@
-package com.toy.plany.dto.dtos;
+package com.toy.plany.dto.response.auth;
 
 import lombok.*;
 

@@ -1,7 +1,5 @@
 package com.toy.plany.dto.response.auth;
 
-import com.toy.plany.dto.dtos.AuthorityDto;
-import com.toy.plany.dto.dtos.TokenDto;
 import com.toy.plany.entity.User;
 import lombok.Builder;
 import lombok.Getter;
