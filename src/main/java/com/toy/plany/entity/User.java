@@ -1,7 +1,5 @@
 package com.toy.plany.entity;
 
-import com.toy.plany.entity.enums.Colors;
-import com.toy.plany.entity.enums.FontColor;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

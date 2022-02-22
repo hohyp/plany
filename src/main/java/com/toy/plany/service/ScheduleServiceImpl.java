@@ -3,7 +3,6 @@ package com.toy.plany.service;
 import com.toy.plany.dto.dtos.FilteredEventDto;
 import com.toy.plany.dto.request.schedule.ReadScheduleRequest;
 import com.toy.plany.dto.response.event.EventInfoResponse;
-import com.toy.plany.dto.response.event.AttendantResponse;
 import com.toy.plany.dto.response.event.ScheduleByUserResponse;
 import com.toy.plany.entity.Event;
 import com.toy.plany.entity.Schedule;
@@ -13,7 +12,6 @@ import com.toy.plany.repository.EventRepo;
 import com.toy.plany.repository.ScheduleRepo;
 import com.toy.plany.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

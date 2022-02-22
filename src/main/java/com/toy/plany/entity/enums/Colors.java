@@ -1,15 +1,11 @@
 package com.toy.plany.entity.enums;
 
-import com.toy.plany.exception.exceptions.InsufficientColorException;
 import lombok.Getter;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 @Getter
 public enum Colors {
+
+    //TODO 색깔 이름 바꾸기
 
     //YELLOW
     LIGHT_YELLOW("#FFF7B8", FontColor.BLACK),

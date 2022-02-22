@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +30,11 @@ public class JobScheduler {
         Map<String, JobParameter> jobParametersMap = new HashMap<>();
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date time = new Date();
+        LocalDateTime time = LocalDateTime.now();
 
-        String time1 = format.format(time);
+        String date = format.format(time);
 
-        jobParametersMap.put("date", new JobParameter(time1));
+        jobParametersMap.put("date", new JobParameter(date));
 
         JobParameters parameters = new JobParameters(jobParametersMap);
 

@@ -9,7 +9,6 @@ import com.toy.plany.entity.Color;
 import com.toy.plany.entity.Department;
 import com.toy.plany.entity.User;
 import com.toy.plany.entity.enums.Colors;
-import com.toy.plany.entity.enums.FontColor;
 import com.toy.plany.exception.exceptions.DeleteFailException;
 import com.toy.plany.exception.exceptions.DepartmentNotFoundException;
 import com.toy.plany.exception.exceptions.InsufficientColorException;
@@ -102,7 +101,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public List<UserResponse> readUserByName(String name) {
-        return findUserByName(name).stream().map(user -> UserResponse.from(user)).collect(Collectors.toList());
+        return findUserByName(name).stream().map(UserResponse::from).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -122,7 +121,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<UserResponse> readUserList() {
-        return findAllUser().stream().map(user -> UserResponse.from(user)).collect(Collectors.toList());
+        return findAllUser().stream().map(UserResponse::from).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -166,7 +165,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<DepartmentResponse> readDepartmentList() {
-        return findAllDepartment().stream().map(department -> DepartmentResponse.from(department)).collect(Collectors.toList());
+        return findAllDepartment().stream().map(DepartmentResponse::from).collect(Collectors.toList());
     }
 
     @Override

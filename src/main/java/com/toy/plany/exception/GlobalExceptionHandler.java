@@ -15,6 +15,9 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    //TODO 에러 핸들링 추가하기
+
+
     @ExceptionHandler(IncorrectPasswordException.class)
     protected ResponseEntity<ErrorResponse> IncorrectPasswordExceptionHandler(
             IncorrectPasswordException e) {

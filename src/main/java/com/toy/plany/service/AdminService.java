@@ -6,7 +6,6 @@ import com.toy.plany.dto.response.admin.DepartmentResponse;
 import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.entity.Color;
 import com.toy.plany.entity.enums.Colors;
-import com.toy.plany.entity.enums.FontColor;
 
 import java.util.List;
 

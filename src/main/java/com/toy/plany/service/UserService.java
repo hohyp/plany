@@ -1,12 +1,9 @@
 package com.toy.plany.service;
 
-import com.toy.plany.dto.dtos.TokenDto;
 import com.toy.plany.dto.request.user.LoginRequest;
 import com.toy.plany.dto.request.user.UpdatePasswordRequest;
 import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.dto.response.auth.LoginResponse;
-import com.toy.plany.dto.response.user.AutoCompleteUserResponse;
-import com.toy.plany.entity.User;
 
 import java.util.List;
 

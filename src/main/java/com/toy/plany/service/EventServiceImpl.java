@@ -26,8 +26,6 @@ import java.util.List;
 @Service
 public class EventServiceImpl implements EventService, SendAlarmService {
 
-    final private String SLACK_POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
-
     @Value("${slack.token}")
     private String SLACK_BOT_TOKEN;
 
@@ -203,6 +201,7 @@ public class EventServiceImpl implements EventService, SendAlarmService {
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
             RestTemplate restTemplate = new RestTemplate();
+            final String SLACK_POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
             restTemplate.exchange(SLACK_POST_MESSAGE_URL, HttpMethod.POST, requestEntity, String.class);
 
             //TODO response 검사하여 예외처리

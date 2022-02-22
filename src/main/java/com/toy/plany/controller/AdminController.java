@@ -6,7 +6,6 @@ import com.toy.plany.dto.response.admin.DepartmentResponse;
 import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.entity.Color;
 import com.toy.plany.entity.enums.Colors;
-import com.toy.plany.entity.enums.FontColor;
 import com.toy.plany.service.AdminService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.http.HttpResponse;
 import java.util.List;
 
 @CrossOrigin("*")

@@ -66,6 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
 
+                //TODO  권한 별로 승인하도록 수정
+
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/login").permitAll()

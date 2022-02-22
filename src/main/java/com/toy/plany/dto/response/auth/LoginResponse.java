@@ -2,7 +2,6 @@ package com.toy.plany.dto.response.auth;
 
 import com.toy.plany.dto.dtos.AuthorityDto;
 import com.toy.plany.dto.dtos.TokenDto;
-import com.toy.plany.dto.response.admin.UserResponse;
 import com.toy.plany.entity.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -69,7 +68,7 @@ public class LoginResponse {
                 .employeeNum(user.getEmployeeNum())
                 .name(user.getName())
                 .color(user.getColor().getColor().getCode())
-                .fontColor(user.getColor().getFontColor().getCode())
+                .fontColor(user.getColor().getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
                 .slackUid(user.getSlackUid())
                 .authorityDtoSet(user.getAuthorities().stream()
@@ -87,7 +86,7 @@ public class LoginResponse {
                 .employeeNum(user.getEmployeeNum())
                 .name(user.getName())
                 .color(user.getColor().getColor().getCode())
-                .fontColor(user.getColor().getFontColor().getCode())
+                .fontColor(user.getColor().getColor().getFontColor().getCode())
                 .department(user.getDepartment().getName())
                 .slackUid(user.getSlackUid())
                 .authorityDtoSet(user.getAuthorities().stream()
