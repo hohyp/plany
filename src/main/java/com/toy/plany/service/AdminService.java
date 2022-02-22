@@ -31,5 +31,5 @@ public interface AdminService {
 
     Boolean deleteDepartment(Long departmentId);
 
-    Color addColor(Colors colors, FontColor fontColor);
+    Color addColor(Colors colors);
 }

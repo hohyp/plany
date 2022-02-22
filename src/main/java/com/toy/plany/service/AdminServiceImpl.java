@@ -80,10 +80,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Transactional
-    public Color addColor(Colors colors, FontColor fontColor){
+    public Color addColor(Colors colors){
         Color color = Color.builder()
                 .color(colors)
-                .fontColor(fontColor)
                 .build();
         return colorRepo.save(color);
     }

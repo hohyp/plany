@@ -23,17 +23,12 @@ public class Color {
     @Enumerated(EnumType.STRING)
     private Colors color;
 
-    @Column(length = 20, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private FontColor fontColor;
-
     private Boolean isUsed;
 
     @Builder
-    public Color(Long id, Colors color, FontColor fontColor) {
+    public Color(Long id, Colors color) {
         this.id = id;
         this.color = color;
-        this.fontColor = fontColor;
         this.isUsed = false;
     }
 

@@ -110,8 +110,8 @@ public class AdminController {
     }
 
     @PostMapping("/color")
-    public ResponseEntity<Color> addColor(@RequestParam Colors color, @RequestParam FontColor fontColor){
-        Color c = adminService.addColor(color, fontColor);
+    public ResponseEntity<Color> addColor(@RequestParam Colors color){
+        Color c = adminService.addColor(color);
         return ResponseEntity.ok(c);
     }
 
