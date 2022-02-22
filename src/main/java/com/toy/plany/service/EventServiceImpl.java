@@ -61,7 +61,9 @@ public class EventServiceImpl implements EventService, SendAlarmService {
         User organizer = findUserById(userId);
         LocalDateTime startTime = date.atTime(Integer.valueOf(request.getStartHour()), Integer.valueOf(request.getStartMinute()));
         LocalDateTime endTime = date.atTime(Integer.valueOf(request.getEndHour()), Integer.valueOf(request.getEndMinute()));
-        //TODO 날짜 검증하기
+
+        //TODO 가용시간 검증하기
+
         Event event = Event.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())

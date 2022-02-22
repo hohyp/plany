@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +30,10 @@ public class JobScheduler {
 
         Map<String, JobParameter> jobParametersMap = new HashMap<>();
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime time = LocalDateTime.now();
 
-        String date = format.format(time);
+        String date = formatter.format(time);
 
         jobParametersMap.put("date", new JobParameter(date));
 
